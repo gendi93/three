@@ -6,10 +6,9 @@ import {
     MeshBasicMaterial,
     PerspectiveCamera,
     WebGLRenderer,
-    Clock,
-    AxesHelper
+    Color
 } from 'three';
-import gsap from 'gsap';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 
 // Canvas
 const canvas = document.querySelector('canvas.webgl');
@@ -22,71 +21,61 @@ const scene = new Scene();
  */
 const group = new Group();
 
-const cube1 = new Mesh(
+const mainCube = new Mesh(
     new BoxGeometry(1, 1, 1),
     new MeshBasicMaterial({ color: 0xff0000 })
 );
-const cube2 = new Mesh(
-    new BoxGeometry(1, 1, 1),
-    new MeshBasicMaterial({ color: 0x00ff00 })
-);
-const cube3 = new Mesh(
-    new BoxGeometry(1, 1, 1),
-    new MeshBasicMaterial({ color: 0x0000ff })
-);
-cube1.position.set(-1.5, 0, 0);
-cube3.position.set(1.5, 0, 0);
-
-group.add(cube1);
-group.add(cube2);
-group.add(cube3);
+group.add(mainCube);
+for (let i = 0; i < 5; i++) {
+    for (let j = 0; j < 3; j++) {
+        const dimension = [1 - 0.1 * i, 1 - 0.1 * i, 1 - 0.1 * i];
+        dimension[j] = [1 + 0.1 * i];
+        const color = new Color( 0xffffff );
+        color.setHex( Math.random() * 0xffffff );
+        
+        const cube = new Mesh(
+            new BoxGeometry(...dimension),
+            new MeshBasicMaterial({ color })
+        );
+        group.add(cube);
+    }
+}
 
 scene.add(group);
-
-const axesHelper = new AxesHelper(0.2);
-scene.add(axesHelper);
 
 /**
  * Sizes
  */
 const sizes = {
-    width: 800,
-    height: 600
+    width: window.visualViewport.width,
+    height: window.visualViewport.height
 };
+const aspectRatio = sizes.width / sizes.height;
 
 /**
  * Camera
  */
-const camera = new PerspectiveCamera(75, sizes.width / sizes.height);
-camera.position.z = 3;
+const camera = new PerspectiveCamera(50, aspectRatio, 0.5, 10);
+camera.position.set(1.5, 1.5, 1.5);
+camera.lookAt(group.position);
 scene.add(camera);
+
+const controls = new OrbitControls(camera, canvas);
+controls.enableDamping = true;
 
 /**
  * Renderer
  */
-const renderer = new WebGLRenderer({ canvas: canvas });
+const renderer = new WebGLRenderer({ canvas: canvas, antialias: true });
 renderer.setSize(sizes.width, sizes.height);
 renderer.render(scene, camera);
 
 /**
  * Animate
  */
-
-gsap.to(group.rotation, { duration: 1, delay: 1, x: 2 });
-gsap.to(group.rotation, { duration: 1, delay: 2, x: 0 });
-
-
-// const clock = new Clock();
-
 const animate = () => {
-    // const elapsedTime = clock.getElapsedTime();
-
-    // group.position.x = -Math.sin(elapsedTime);
-    // camera.position.x = Math.sin(elapsedTime);
-    // camera.lookAt(group.position)
-
+    controls.update();
     renderer.render(scene, camera);
-
     requestAnimationFrame(animate);
 }
 
