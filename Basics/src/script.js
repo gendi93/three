@@ -47,8 +47,8 @@ scene.add(group);
  * Sizes
  */
 const sizes = {
-    width: window.visualViewport.width,
-    height: window.visualViewport.height
+    width: window.innerWidth,
+    height: window.innerHeight
 };
 const aspectRatio = sizes.width / sizes.height;
 
