@@ -27,6 +27,8 @@ const mainCube = new Mesh(
 );
 group.add(mainCube);
 for (let i = 0; i < 5; i++) {
+    const color = new Color( 0xffffff );
+    color.setHex( Math.random() * 0xffffff );
     for (let j = 0; j < 3; j++) {
         const dimension = [1 - 0.1 * i, 1 - 0.1 * i, 1 - 0.1 * i];
         dimension[j] = [1 + 0.1 * i];
