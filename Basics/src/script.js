@@ -6,14 +6,29 @@ import {
     MeshBasicMaterial,
     PerspectiveCamera,
     WebGLRenderer,
-    Color
+    Color,
+    TextureLoader,
+    LoadingManager,
+    NearestFilter
 } from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import * as lil from 'lil-gui';
+
 import { debugBuilder } from './debugger.js';
 
+/**
+ * Textures
+ */
+const loadingManager = new LoadingManager();
+const textureLoader = new TextureLoader(loadingManager);
+const colorTexture = textureLoader.load('/textures/minecraft.png');
+
+colorTexture.generateMipmaps = false;
+colorTexture.minFilter = NearestFilter;
+colorTexture.magFilter = NearestFilter;
+
 // GUI
-const gui = new lil.GUI({ name: 'Controls' });
+// const gui = new lil.GUI({ name: 'Controls' });
 
 // Canvas
 const canvas = document.querySelector('canvas.webgl');
@@ -26,30 +41,14 @@ const scene = new Scene();
  */
 const group = new Group();
 
-const mainCube = new Mesh(
-    new BoxGeometry(1, 1, 1),
-    new MeshBasicMaterial({ color: 0xff0000 })
-);
-group.add(mainCube);
-for (let i = 0; i < 5; i++) {
-    const color = new Color( 0xffffff );
-    color.setHex( Math.random() * 0xffffff );
-    for (let j = 0; j < 3; j++) {
-        const dimension = [1 - 0.1 * i, 1 - 0.1 * i, 1 - 0.1 * i];
-        dimension[j] = [1 + 0.1 * i];
-        
-        const cube = new Mesh(
-            new BoxGeometry(...dimension),
-            new MeshBasicMaterial({ color })
-        );
-        group.add(cube);
-    }
-}
-scene.add(group);
+const geometry = new BoxGeometry(1, 1, 1);
+const material = new MeshBasicMaterial({ map: colorTexture });
+const mainCube = new Mesh( geometry, material);
+scene.add(mainCube);
 
 const cubeOptions = {
     folderName: 'Cube',
-    target: group,
+    target: mainCube,
     controls: {
         position: {
             x: {},
@@ -74,20 +73,12 @@ const colorOption = {
     randomColor: () => {
         const mainColor = new Color( 0xffffff );
         mainColor.setHex( Math.random() * 0xffffff );
-        group.children[0].material.color.set(mainColor);
-        
-        for (let i = 0; i < 5; i++) {
-            const color = new Color( 0xffffff );
-            color.setHex( Math.random() * 0xffffff );
-            for (let j = 0; j < 3; j++) {
-                group.children[i * 3 + j + 1].material.color.set(color);
-            }
-        }
+        mainCube.material.color.set(mainColor);
     }
 }
 
-debugBuilder(gui, cubeOptions);
-gui.add(colorOption, 'randomColor');
+// debugBuilder(gui, cubeOptions);
+// gui.add(colorOption, 'randomColor');
 
 /**
  * Sizes
@@ -132,7 +123,7 @@ window.addEventListener('dblclick', () => {
 /**
  * Camera
  */
-const camera = new PerspectiveCamera(50, aspectRatio, 0.5, 10);
+const camera = new PerspectiveCamera(50, aspectRatio, 0.01, 100);
 camera.position.set(1.5, 1.5, 1.5);
 camera.lookAt(group.position);
 scene.add(camera);
@@ -152,7 +143,7 @@ const cameraOptions = {
         },
     }
 };
-debugBuilder(gui, cameraOptions);
+// debugBuilder(gui, cameraOptions);
 
 const controls = new OrbitControls(camera, canvas);
 controls.enableDamping = true;
