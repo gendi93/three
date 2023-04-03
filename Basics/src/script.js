@@ -71,48 +71,21 @@ const material = new MeshBasicMaterial({ map: colorTexture });
 const mainCube = new Mesh( geometry, material);
 scene.add(mainCube);
 
-const cubeOptions = {
-    folderName: 'Cube',
-    target: mainCube,
-    controls: {
-        position: {
-            x: {},
-            y: {},
-            z: {}
-        },
-        rotation: {
-            x: {step: 1},
-            y: {step: 1},
-            z: {step: 1}
-        },
-        scale: {
-            x: {min: 0.01},
-            y: {min: 0.01},
-            z: {min: 0.01}
-        },
-        visible: {},
-    }
-};
+// Animate
+const clock = new THREE.Clock();
+const animate = () => {
+    const elapsedTime = clock.getElapsedTime();
 
-const colorOption = {
-    randomColor: () => {
-        const mainColor = new Color( 0xffffff );
-        mainColor.setHex( Math.random() * 0xffffff );
-        mainCube.material.color.set(mainColor);
-    }
+    plane.rotation.y = 0.1 * elapsedTime;
+
+    controls.update();
+    renderer.render(scene, camera);
+    requestAnimationFrame(animate);
 }
 
-// debugBuilder(gui, cubeOptions);
-// gui.add(colorOption, 'randomColor');
+animate();
 
-/**
- * Sizes
- */
-const sizes = {
-    width: window.innerWidth,
-    height: window.innerHeight
-};
-const aspectRatio = sizes.width / sizes.height;
+// Event Listeners
 window.addEventListener('resize', () => {
     // Update sizes
     sizes.width = window.innerWidth;
@@ -144,49 +117,3 @@ window.addEventListener('dblclick', () => {
         }
     }
 });
-
-/**
- * Camera
- */
-const camera = new PerspectiveCamera(50, aspectRatio, 0.01, 100);
-camera.position.set(1.5, 1.5, 1.5);
-camera.lookAt(group.position);
-scene.add(camera);
-const cameraOptions = {
-    folderName: 'Camera',
-    target: camera,
-    controls: {
-        position: {
-            x: {label: 'positionX'},
-            y: {label: 'positionY'},
-            z: {label: 'positionZ'}
-        },
-        rotation: {
-            x: {step: 1},
-            y: {step: 1},
-            z: {step: 1}
-        },
-    }
-};
-// debugBuilder(gui, cameraOptions);
-
-const controls = new OrbitControls(camera, canvas);
-controls.enableDamping = true;
-
-/**
- * Renderer
- */
-const renderer = new WebGLRenderer({ canvas: canvas, antialias: true });
-renderer.setSize(sizes.width, sizes.height);
-renderer.render(scene, camera);
-
-/**
- * Animate
- */
-const animate = () => {
-    controls.update();
-    renderer.render(scene, camera);
-    requestAnimationFrame(animate);
-}
-
-animate();
