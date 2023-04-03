@@ -1,20 +1,15 @@
-import {
-    Scene,
-    Group,
-    Mesh,
-    BoxGeometry,
-    MeshBasicMaterial,
-    PerspectiveCamera,
-    WebGLRenderer,
-    Color,
-    TextureLoader,
-    LoadingManager,
-    NearestFilter
-} from 'three';
+import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import * as lil from 'lil-gui';
 
-import { debugBuilder } from './debugger.js';
+const textureLoader = new THREE.TextureLoader();
+const colorTexture = textureLoader.load('/textures/door/color.jpg');
+const alphaTexture = textureLoader.load('/textures/door/alpha.jpg');
+const ambientOcclusionTexture = textureLoader.load('/textures/door/ambientOcclusion.jpg');
+const heightTexture = textureLoader.load('/textures/door/height.jpg');
+const normalTexture = textureLoader.load('/textures/door/normal.jpg');
+const metalnessTexture = textureLoader.load('/textures/door/metalness.jpg');
+const roughnessTexture = textureLoader.load('/textures/door/roughness.jpg');
 
 /**
  * Textures
