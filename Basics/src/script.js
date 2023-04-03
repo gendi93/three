@@ -11,30 +11,60 @@ const normalTexture = textureLoader.load('/textures/door/normal.jpg');
 const metalnessTexture = textureLoader.load('/textures/door/metalness.jpg');
 const roughnessTexture = textureLoader.load('/textures/door/roughness.jpg');
 
-/**
- * Textures
- */
-const loadingManager = new LoadingManager();
-const textureLoader = new TextureLoader(loadingManager);
-const colorTexture = textureLoader.load('/textures/minecraft.png');
-
-colorTexture.generateMipmaps = false;
-colorTexture.minFilter = NearestFilter;
-colorTexture.magFilter = NearestFilter;
-
-// GUI
-// const gui = new lil.GUI({ name: 'Controls' });
-
 // Canvas
 const canvas = document.querySelector('canvas.webgl');
 
-// Scene
-const scene = new Scene();
+// Material
+const material = new THREE.MeshStandardMaterial();
 
-/**
- * Objects
- */
-const group = new Group();
+material.metalness = 0.7;
+material.roughness = 0.2;
+material.map = colorTexture;
+material.aoMap = ambientOcclusionTexture;
+material.aoMapIntensity = 1;
+material.displacementMap = heightTexture;
+material.displacementScale = 0.05;
+material.normalMap = normalTexture;
+material.normalScale.set(0.5, 0.5);
+material.metalnessMap = metalnessTexture;
+material.roughnessMap = roughnessTexture;
+material.alphaMap = alphaTexture;
+material.transparent = true;
+material.side = THREE.DoubleSide;
+material.envMap = environmentMapTexture;
+
+// Lights
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+const pointLight = new THREE.PointLight(0xffffff, 0.5);
+pointLight.position.set(2, 3, 4);
+
+// Objects
+const planeGeometry = new THREE.PlaneGeometry(1, 1, 100, 100);
+const plane = new THREE.Mesh(planeGeometry, material);
+plane.geometry.setAttribute('uv2', new THREE.BufferAttribute(plane.geometry.attributes.uv.array, 2));
+
+// Sizes
+const sizes = {
+    width: window.innerWidth,
+    height: window.innerHeight
+};
+const aspectRatio = sizes.width / sizes.height;
+
+// Camera
+const camera = new THREE.PerspectiveCamera(70, aspectRatio, 0.01, 100);
+camera.position.set(3, 0, 3);
+
+const controls = new OrbitControls(camera, canvas);
+controls.enableDamping = true;
+
+// Scene
+const scene = new THREE.Scene();
+scene.add(plane, camera, pointLight, ambientLight);
+
+// Renderer
+const renderer = new THREE.WebGLRenderer({ canvas });
+renderer.setSize(sizes.width, sizes.height);
+renderer.render(scene, camera);
 
 const geometry = new BoxGeometry(1, 1, 1);
 const material = new MeshBasicMaterial({ map: colorTexture });
