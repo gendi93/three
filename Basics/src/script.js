@@ -50,8 +50,8 @@ const sizes = {
 const aspectRatio = sizes.width / sizes.height;
 
 // Camera
-const camera = new THREE.PerspectiveCamera(70, aspectRatio, 0.01, 100);
-camera.position.set(3, 0, 3);
+const camera = new THREE.PerspectiveCamera(50, aspectRatio, 0.01, 100);
+camera.position.set(1, 0, 1);
 
 const controls = new OrbitControls(camera, canvas);
 controls.enableDamping = true;
