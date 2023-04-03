@@ -66,10 +66,24 @@ const renderer = new THREE.WebGLRenderer({ canvas });
 renderer.setSize(sizes.width, sizes.height);
 renderer.render(scene, camera);
 
-const geometry = new BoxGeometry(1, 1, 1);
-const material = new MeshBasicMaterial({ map: colorTexture });
-const mainCube = new Mesh( geometry, material);
-scene.add(mainCube);
+// Debugger
+const gui = new lil.GUI('Material Options');
+gui.add(material, 'wireframe');
+gui.add(material, 'alphaMap', { None: null, Color: colorTexture, Alpha: alphaTexture });
+gui.add(material, 'aoMap', { None: null, Color: colorTexture, AmbientOcclusion: ambientOcclusionTexture });
+gui.add(material, 'aoMapIntensity', 0, 10, 0.01);
+gui.add(material, 'bumpMap', { None: null, Color: colorTexture, Height: heightTexture });
+gui.add(material, 'displacementMap', { None: null, Color: colorTexture, Height: heightTexture });
+gui.add(material, 'displacementScale', 0, 1, 0.01);
+gui.add(material, 'envMap', { None: null, Color: colorTexture, Matcap: environmentMapTexture });
+gui.add(material, 'map', { None: null, Color: colorTexture });
+gui.add(material, 'metalnessMap', { None: null, Color: colorTexture, Metalness: metalnessTexture });
+gui.add(material, 'metalness', 0, 1, 0.01);
+gui.add(material, 'normalMap', { None: null, Color: colorTexture, Normal: normalTexture });
+gui.add(material, 'roughnessMap', { None: null, Color: colorTexture, Roughness: roughnessTexture });
+gui.add(material, 'roughness', 0, 1, 0.01);
+gui.add(material, 'specularMap', { None: null, Color: colorTexture });
+gui.add(material, 'transparent');
 
 // Animate
 const clock = new THREE.Clock();
