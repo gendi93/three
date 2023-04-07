@@ -1,9 +1,10 @@
-import * as THREE from 'three'
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
-import * as dat from 'lil-gui'
+import * as THREE from 'three';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+import { RectAreaLightHelper } from 'three/examples/jsm/helpers/RectAreaLightHelper.js';
+import * as dat from 'lil-gui';
 
 // Debug
-const gui = new dat.GUI();
+const gui = new dat.GUI({ title: 'Lights', closeFolders: true });
 
 // Canvas
 const canvas = document.querySelector('canvas.webgl');
@@ -12,12 +13,106 @@ const canvas = document.querySelector('canvas.webgl');
 const scene = new THREE.Scene();
 
 // Lights
-const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+const ambientColor = {
+	string: '#0000ff',
+	object: { r: 0, g: 1, b: 1 },
+};
+const directionalColor = {
+	string: '#ff00ff',
+	object: { r: 1, g: 0, b: 1 },
+};
+const hemisphereColor = {
+	string: '#ff00ff',
+	object: { r: 1, g: 0, b: 1 },
+};
+const hemisphereGroundColor = {
+    string: '#0000ff',
+    object: { r: 0, g: 0, b: 1 },
+};
+const pointColor = {
+	string: '#ff0000',
+	object: { r: 1, g: 0, b: 1 },
+};
+const rectColor = {
+	string: '#00ffff',
+	object: { r: 1, g: 0, b: 1 },
+};
+const spotColor = {
+	string: '#ff00ff',
+	object: { r: 1, g: 0, b: 1 },
+};
 
-const pointLight = new THREE.PointLight(0xffffff, 0.5);
-pointLight.position.x = 2;
-pointLight.position.y = 3;
-pointLight.position.z = 4;
+// Ambient Light
+const ambientLight = new THREE.AmbientLight(0x00ffff, 0.1);
+const ambientFolder = gui.addFolder('Ambient Light');
+ambientFolder.addColor(ambientColor, 'string').name('Ambient Color');
+ambientFolder.add(ambientLight, 'intensity').name('Ambient Intensity').min(0).max(1).step(0.001);
+
+// Directional Light
+const directionalLight = new THREE.DirectionalLight(0xff00ff, 0);
+const directionalLightHelper = new THREE.DirectionalLightHelper(directionalLight, 0.2);
+const directionalFolder = gui.addFolder('Directional Light');
+directionalFolder.add(directionalLightHelper, 'visible').name('Directional Helper').setValue(false);
+directionalFolder.addColor(directionalColor, 'string').name('Directional Color');
+directionalFolder.add(directionalLight, 'intensity').name('Directional Intensity').min(0).max(1).step(0.001);
+directionalFolder.add(directionalLight.position, 'x').name('Directional x').min(-5).max(5).step(0.001);
+directionalFolder.add(directionalLight.position, 'y').name('Directional y').min(-5).max(5).step(0.001);
+directionalFolder.add(directionalLight.position, 'z').name('Directional z').min(-5).max(5).step(0.001);
+
+// Hemisphere Light
+const hemisphereLight = new THREE.HemisphereLight(0xff0000, 0x00ff00, 0);
+const hemisphereLightHelper = new THREE.HemisphereLightHelper(hemisphereLight, 0.2);
+const hemisphereFolder = gui.addFolder('Hemisphere Light');
+hemisphereFolder.add(hemisphereLightHelper, 'visible').name('Hemisphere Helper').setValue(false);
+hemisphereFolder.addColor(hemisphereColor, 'string').name('Hemisphere Color');
+hemisphereFolder.addColor(hemisphereGroundColor, 'string').name('Ground Color');
+hemisphereFolder.add(hemisphereLight, 'intensity').name('Hemisphere Intensity').min(0).max(1).step(0.001);
+hemisphereFolder.add(hemisphereLight.position, 'x').name('Hemisphere x').min(-5).max(5).step(0.001);
+hemisphereFolder.add(hemisphereLight.position, 'y').name('Hemisphere y').min(-5).max(5).step(0.001);
+hemisphereFolder.add(hemisphereLight.position, 'z').name('Hemisphere z').min(-5).max(5).step(0.001);
+
+// Point Light
+const pointLight = new THREE.PointLight(0xff0000, 0.5, 5, 1);
+const pointLightHelper = new THREE.PointLightHelper(pointLight, 0.2);
+const pointFolder = gui.addFolder('Point Light');
+pointFolder.add(pointLightHelper, 'visible').name('Point Helper').setValue(false);
+pointFolder.addColor(pointColor, 'string').name('Point Color');
+pointFolder.add(pointLight, 'intensity').name('Point Intensity').min(0).max(1).step(0.001);
+pointFolder.add(pointLight.position, 'x').name('Point x').min(-5).max(5).step(0.001);
+pointFolder.add(pointLight.position, 'y').name('Point y').min(-5).max(5).step(0.001).setValue(-2);
+pointFolder.add(pointLight.position, 'z').name('Point z').min(-5).max(5).step(0.001);
+
+// Rect Area Light
+const rectAreaLight = new THREE.RectAreaLight(0x00ffff, 1, 5, 5);
+rectAreaLight.rotateY(Math.PI);
+const rectAreaLightHelper = new RectAreaLightHelper(rectAreaLight);
+const rectFolder = gui.addFolder('Rect Area Light');
+rectFolder.add(rectAreaLightHelper, 'visible').name('Rect Area Helper').setValue(false);
+rectFolder.addColor(rectColor, 'string').name('Rect Area Color');
+rectFolder.add(rectAreaLight, 'intensity').name('Rect Intensity').min(0).max(10).step(0.001);
+rectFolder.add(rectAreaLight, 'width').name('Rect Width').min(0).max(5).step(0.001);
+rectFolder.add(rectAreaLight, 'height').name('Rect Height').min(0).max(5).step(0.001);
+rectFolder.add(rectAreaLight.position, 'x').name('Rect x').min(-5).max(5).step(0.001);
+rectFolder.add(rectAreaLight.position, 'y').name('Rect y').min(-5).max(5).step(0.001);
+rectFolder.add(rectAreaLight.position, 'z').name('Rect z').min(-5).max(5).step(0.001).setValue(-2.5);
+
+// Spot Light
+const spotLight = new THREE.SpotLight(0xff00ff, 0.5, 10, 1, 0.25, 1);
+const spotLightHelper = new THREE.SpotLightHelper(spotLight);
+const spotFolder = gui.addFolder('Spot Light');
+spotFolder.add(spotLightHelper, 'visible').name('Spot Helper').setValue(false);
+spotFolder.addColor(spotColor, 'string').name('Spot Color');
+spotFolder.add(spotLight, 'intensity').name('Spot Intensity').min(0).max(10).step(0.001);
+spotFolder.add(spotLight, 'distance').name('Spot Distance').min(0).max(10).step(0.001);
+spotFolder.add(spotLight, 'angle').name('Spot Angle').min(0).max(Math.PI).step(0.001);
+spotFolder.add(spotLight, 'penumbra').name('Spot Penumbra').min(0).max(5).step(0.001);
+spotFolder.add(spotLight, 'decay').name('Spot Decay').min(0).max(5).step(0.001);
+spotFolder.add(spotLight.position, 'x').name('Spot x').min(-5).max(5).step(0.001);
+spotFolder.add(spotLight.position, 'y').name('Spot y').min(-5).max(5).step(0.001).setValue(2);
+spotFolder.add(spotLight.position, 'z').name('Spot z').min(-5).max(5).step(0.001);
+spotFolder.add(spotLight.target.position, 'x').name('Target x').min(-5).max(5).step(0.001);
+spotFolder.add(spotLight.target.position, 'y').name('Target y').min(-5).max(5).step(0.001);
+spotFolder.add(spotLight.target.position, 'z').name('Target z').min(-5).max(5).step(0.001);
 
 // Material
 const material = new THREE.MeshStandardMaterial();
@@ -80,7 +175,7 @@ const controls = new OrbitControls(camera, canvas);
 controls.enableDamping = true;
 
 // Renderer
-scene.add(pointLight, ambientLight, sphere, cube, torus, plane, camera);
+scene.add(ambientLight, directionalLight, directionalLightHelper, hemisphereLight, hemisphereLightHelper, pointLight, pointLightHelper, rectAreaLight, rectAreaLightHelper, spotLight, spotLightHelper, spotLight.target, sphere, cube, torus, plane, camera);
 const renderer = new THREE.WebGLRenderer({
     canvas: canvas
 });
@@ -105,6 +200,13 @@ const tick = () =>
 
     // Update controls
     controls.update();
+    ambientLight.color.set(ambientColor.string);
+    directionalLight.color.set(directionalColor.string);
+    hemisphereLight.color.set(hemisphereColor.string);
+    hemisphereLight.groundColor.set(hemisphereGroundColor.string);
+    pointLight.color.set(pointColor.string);
+    rectAreaLight.color.set(rectColor.string);
+    spotLight.color.set(spotColor.string);
 
     // Render
     renderer.render(scene, camera);
