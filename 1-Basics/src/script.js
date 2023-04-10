@@ -21,39 +21,39 @@ const fontLoader = new FontLoader();
 const donutGeometry = new THREE.TorusGeometry(0.3, 0.2, 20, 45);
 
 fontLoader.load('/fonts/Josefin Sans_Regular.json', (font) => {
-    const textGeometry = new TextGeometry(
-        'Solid metal donuts!',
-        {
-            font,
-            size: 0.5,
-            height: 0.2,
-            curveSegments: 5,
-            bevelEnabled: true,
-            bevelThickness: 0.03,
-            bevelSize: 0.02,
-            bevelOffset: 0,
-            bevelSegments: 4
-        }
-    );
-    textGeometry.center();
-
-    const text = new THREE.Mesh(textGeometry, material);
-    scene.add(text);
-
-    for (let i = 0; i < 100; i++) {
-        const donut = new THREE.Mesh(donutGeometry, material);
-        donut.position.set((Math.random() - 0.5) * 20, (Math.random() - 0.5) * 20, (Math.random() - 0.5) * 20);
-        donut.rotation.set((Math.random() - 0.5) * Math.PI, (Math.random() - 0.5) * Math.PI, (Math.random() - 0.5) * Math.PI);
-        const scale = Math.random();
-        donut.scale.set(scale, scale, scale);
-        scene.add(donut);
+  const textGeometry = new TextGeometry(
+    'Solid metal donuts!',
+    {
+      font,
+      size: 0.5,
+      height: 0.2,
+      curveSegments: 5,
+      bevelEnabled: true,
+      bevelThickness: 0.03,
+      bevelSize: 0.02,
+      bevelOffset: 0,
+      bevelSegments: 4
     }
+  );
+  textGeometry.center();
+
+  const text = new THREE.Mesh(textGeometry, material);
+  scene.add(text);
+
+  for (let i = 0; i < 100; i++) {
+    const donut = new THREE.Mesh(donutGeometry, material);
+    donut.position.set((Math.random() - 0.5) * 20, (Math.random() - 0.5) * 20, (Math.random() - 0.5) * 20);
+    donut.rotation.set((Math.random() - 0.5) * Math.PI, (Math.random() - 0.5) * Math.PI, (Math.random() - 0.5) * Math.PI);
+    const scale = Math.random();
+    donut.scale.set(scale, scale, scale);
+    scene.add(donut);
+  }
 });
 
 // Sizes
 const sizes = {
-    width: window.innerWidth,
-    height: window.innerHeight
+  width: window.innerWidth,
+  height: window.innerHeight
 };
 const aspectRatio = sizes.width / sizes.height;
 
@@ -76,47 +76,47 @@ renderer.render(scene, camera);
 
 // Animate
 const animate = () => {
-    scene.children.slice(4).forEach((donut, index) => {;
-        donut.rotation.x += index / 2000;
-        donut.rotation.y += index / 2000;
-        donut.rotation.z += index / 2000;
-    });
-    controls.update();
-    renderer.render(scene, camera);
-    requestAnimationFrame(animate);
-}
+  scene.children.slice(4).forEach((donut, index) => {
+    donut.rotation.x += index / 2000;
+    donut.rotation.y += index / 2000;
+    donut.rotation.z += index / 2000;
+  });
+  controls.update();
+  renderer.render(scene, camera);
+  requestAnimationFrame(animate);
+};
 
 animate();
 
 // Event Listeners
 window.addEventListener('resize', () => {
-    // Update sizes
-    sizes.width = window.innerWidth;
-    sizes.height = window.innerHeight;
+  // Update sizes
+  sizes.width = window.innerWidth;
+  sizes.height = window.innerHeight;
 
-    // Update camera
-    camera.aspect = sizes.width / sizes.height;
-    camera.updateProjectionMatrix();
+  // Update camera
+  camera.aspect = sizes.width / sizes.height;
+  camera.updateProjectionMatrix();
 
-    // Update renderer
-    renderer.setSize(sizes.width, sizes.height);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  // Update renderer
+  renderer.setSize(sizes.width, sizes.height);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 });
 
 window.addEventListener('dblclick', () => {
-    const fullscreenElement = document.fullscreenElement || document.webkitFullscreenElement;
+  const fullscreenElement = document.fullscreenElement || document.webkitFullscreenElement;
 
-    if (!fullscreenElement) {
-        if (canvas.requestFullscreen) {
-            canvas.requestFullscreen();
-        } else if (canvas.webkitRequestFullscreen) {
-            canvas.webkitRequestFullscreen();
-        }
-    } else {
-        if (document.exitFullscreen) {
-            document.exitFullscreen();
-        } else if (document.webkitExitFullscreen) {
-            document.webkitExitFullscreen();
-        }
+  if (!fullscreenElement) {
+    if (canvas.requestFullscreen) {
+      canvas.requestFullscreen();
+    } else if (canvas.webkitRequestFullscreen) {
+      canvas.webkitRequestFullscreen();
     }
+  } else {
+    if (document.exitFullscreen) {
+      document.exitFullscreen();
+    } else if (document.webkitExitFullscreen) {
+      document.webkitExitFullscreen();
+    }
+  }
 });
