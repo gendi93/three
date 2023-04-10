@@ -1,18 +1,18 @@
-const isCodeSandbox = 'SANDBOX_URL' in process.env || 'CODESANDBOX_HOST' in process.env
+const isCodeSandbox = 'SANDBOX_URL' in process.env || 'CODESANDBOX_HOST' in process.env;
 
 export default {
-    root: './2-ClassicTechniques/17-HauntedHouse/src/',
-    publicDir: '../static/',
-    base: './',
-    server:
+  root: './2-ClassicTechniques/18-Particles/src/',
+  publicDir: '../static/',
+  base: './',
+  server:
     {
-        host: true,
-        open: !isCodeSandbox // Open if it's not a CodeSandbox
+      host: true,
+      open: !isCodeSandbox // Open if it's not a CodeSandbox
     },
-    build:
+  build:
     {
-        outDir: '../../../dist',
-        emptyOutDir: true,
-        sourcemap: true
+      outDir: '../../../dist',
+      emptyOutDir: true,
+      sourcemap: true
     }
-}
+};
