@@ -10,7 +10,9 @@ const phase = {
   angleZ2: 0,
   amplitudeX: 1,
   amplitudeZ: 1,
-  particleCount: 20000
+  particleType: 3,
+  particleCount: 20000,
+  particleSize: 0.5
 };
 gui.add(phase, 'angleX', 0, (2 * Math.PI * 180/Math.PI), 0.1).name('Angle X').setValue(10);
 gui.add(phase, 'angleZ', 0, (2 * Math.PI * 180/Math.PI), 0.1).name('Angle Z').setValue(20);
@@ -18,7 +20,9 @@ gui.add(phase, 'angleX2', 0, (2 * Math.PI * 180/Math.PI), 0.1).name('Angle X2').
 gui.add(phase, 'angleZ2', 0, (2 * Math.PI * 180/Math.PI), 0.1).name('Angle Z2').setValue(0);
 gui.add(phase, 'amplitudeX', 0, 10, 0.1).name('Amplitude X').setValue(1);
 gui.add(phase, 'amplitudeZ', 0, 10, 0.1).name('Amplitude Z').setValue(1);
+gui.add(phase, 'particleType', 0, 13, 1).name('Particle Type').setValue(3);
 gui.add(phase, 'particleCount', 0, 100000).name('Particle Count');
+gui.add(phase, 'particleSize', 0, 1, 0.01).name('Particle Size');
 
 // Canvas
 const canvas = document.querySelector('canvas.webgl');
@@ -30,7 +34,10 @@ const scene = new THREE.Scene();
  * Textures
  */
 const textureLoader = new THREE.TextureLoader();
-const particleTexture = textureLoader.load('/textures/particles/4.png');
+const textures = [];
+for (let i = 1; i <= 13; i++) {
+  textures.push(textureLoader.load(`/textures/particles/${i}.png`));
+}
 
 const particleGeometry = new THREE.BufferGeometry();
 
@@ -49,7 +56,7 @@ const particleMaterial = new THREE.PointsMaterial({
   size: 0.5,
   sizeAttenuation: true,
   color: 0xff33ff,
-  alphaMap: particleTexture,
+  alphaMap: textures[phase.particleType],
   transparent: true,
   depthWrite: false,
   blending: THREE.AdditiveBlending,
@@ -130,6 +137,9 @@ const tick = () =>
   }
 
   particleGeometry.attributes.position.needsUpdate = true;
+
+  particleMaterial.size = phase.particleSize;
+  particleMaterial.alphaMap = textures[phase.particleType];
 
   // Update controls
   controls.update();
