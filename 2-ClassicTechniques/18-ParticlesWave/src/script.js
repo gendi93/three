@@ -6,8 +6,8 @@ const gui = new dat.GUI();
 const phase = {
   amplitude: 1,
   particleType: 7,
-  particleCount: 20000,
-  particleSize: 0.5
+  particleCount: 5000,
+  particleSize: 1
 };
 gui.add(phase, 'amplitude', 0, 10, 0.1).name('Amplitude').setValue(1);
 gui.add(phase, 'particleType', 0, 13, 1).name('Particle Type').setValue(7);
