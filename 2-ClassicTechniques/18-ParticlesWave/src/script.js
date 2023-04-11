@@ -4,12 +4,14 @@ import * as dat from 'lil-gui';
 
 const gui = new dat.GUI();
 const phase = {
-  amplitude: 1,
+  restingAmplitude: 1,
+  waveAmplitude: 1,
   particleType: 7,
   particleCount: 5000,
   particleSize: 1
 };
-gui.add(phase, 'amplitude', 0, 10, 0.1).name('Amplitude').setValue(1);
+gui.add(phase, 'restingAmplitude', 0, 10, 0.1).name('Resting Amplitude').setValue(1);
+gui.add(phase, 'waveAmplitude', 0, 10, 0.1).name('Wave Amplitude').setValue(1);
 gui.add(phase, 'particleType', 0, 13, 1).name('Particle Type').setValue(7);
 gui.add(phase, 'particleCount', 0, 100000).name('Particle Count');
 gui.add(phase, 'particleSize', 0, 1, 0.01).name('Particle Size');
@@ -141,9 +143,9 @@ const tick = () =>
     const x = particleGeometry.attributes.position.array[i3];
     const z = particleGeometry.attributes.position.array[i3 + 2];
     if (Math.sqrt(Math.pow(point.x-x, 2) + Math.pow(point.z-z, 2), 2) > elapsedTime*8) {
-      particleGeometry.attributes.position.array[i3 + 1] = Math.cos(clock.getElapsedTime() + x/4) + Math.sin(clock.getElapsedTime() + z/4);
+      particleGeometry.attributes.position.array[i3 + 1] = phase.restingAmplitude * (Math.cos(clock.getElapsedTime() + x/4) + Math.sin(clock.getElapsedTime() + z/4));
     } else {
-      particleGeometry.attributes.position.array[i3 + 1] = Math.cos(clock.getElapsedTime() + x/4) + Math.sin(clock.getElapsedTime() + z/4) + Math.pow(Math.E, 0.5 - elapsedTime) * ((phase.amplitude * (1/Math.cosh((x)/4))) * Math.cos(elapsedTime*4 + (Math.sqrt(Math.pow(point.x-x, 2) + Math.pow(point.z-z, 2), 2)) * 0.5) + (phase.amplitude * (1/Math.cosh((z)/4))) * Math.sin(elapsedTime*4 + (Math.sqrt(Math.pow(point.x-x, 2) + Math.pow(point.z-z, 2), 2)) * 0.5));
+      particleGeometry.attributes.position.array[i3 + 1] = phase.restingAmplitude * (Math.cos(clock.getElapsedTime() + x/4) + Math.sin(clock.getElapsedTime() + z/4)) + Math.pow(Math.E, 0.5 - elapsedTime) * ((phase.waveAmplitude * (1/Math.cosh((x)/4))) * Math.cos(elapsedTime*4 + (Math.sqrt(Math.pow(point.x-x, 2) + Math.pow(point.z-z, 2), 2)) * 0.5) + (phase.waveAmplitude * (1/Math.cosh((z)/4))) * Math.sin(elapsedTime*4 + (Math.sqrt(Math.pow(point.x-x, 2) + Math.pow(point.z-z, 2), 2)) * 0.5));
     }
   }
 
