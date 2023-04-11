@@ -1,7 +1,7 @@
 const isCodeSandbox = 'SANDBOX_URL' in process.env || 'CODESANDBOX_HOST' in process.env;
 
 export default {
-  root: './2-ClassicTechniques/18-Particles/src/',
+  root: './2-ClassicTechniques/18-ParticlesWave/src/',
   publicDir: '../static/',
   base: './',
   server:
