@@ -1,7 +1,11 @@
-import { resolve } from 'path';
+import { resolve, dirname } from 'path';
 import { defineConfig } from 'vite';
 
+import { fileURLToPath } from 'url';
+
 const isCodeSandbox = 'SANDBOX_URL' in process.env || 'CODESANDBOX_HOST' in process.env;
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 export default defineConfig({
   root: './src/',
@@ -16,13 +20,13 @@ export default defineConfig({
     {
       rollupOptions: {
         input: {
-          main: resolve('./src/', 'index.html'),
-          basics: resolve('./src/1-Basics/', 'index.html'),
-          lights: resolve('./src/2-ClassicTechniques/15-Lights/', 'index.html'),
-          shadows: resolve('./src/2-ClassicTechniques/16-Shadows/', 'index.html'),
-          hauntedHouse: resolve('./src/2-ClassicTechniques/17-HauntedHouse/', 'index.html'),
-          particles: resolve('./src/2-ClassicTechniques/18-Particles/', 'index.html'),
-          particlesWave: resolve('./src/2-ClassicTechniques/18-ParticlesWave/', 'index.html'),
+          main: resolve(__dirname, 'src/index.html'),
+          basics: resolve(__dirname, './src/1-Basics/index.html'),
+          lights: resolve(__dirname, './src/2-ClassicTechniques/15-Lights/index.html'),
+          shadows: resolve(__dirname, './src/2-ClassicTechniques/16-Shadows/index.html'),
+          hauntedHouse: resolve(__dirname, './src/2-ClassicTechniques/17-HauntedHouse/index.html'),
+          particles: resolve(__dirname, './src/2-ClassicTechniques/18-Particles/index.html'),
+          particlesWave: resolve(__dirname, './src/2-ClassicTechniques/18-ParticlesWave/index.html'),
         }
       },
       outDir: '../dist',
