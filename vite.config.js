@@ -21,6 +21,8 @@ export default defineConfig({
       rollupOptions: {
         input: {
           main: resolve(__dirname, 'src/index.html'),
+          intro: resolve(__dirname, './src/1-Basics/1-Intro/index.html'),
+          cube: resolve(__dirname, './src/1-Basics/2-Cube/index.html'),
           basics: resolve(__dirname, './src/1-Basics/index.html'),
           lights: resolve(__dirname, './src/2-ClassicTechniques/15-Lights/index.html'),
           shadows: resolve(__dirname, './src/2-ClassicTechniques/16-Shadows/index.html'),
