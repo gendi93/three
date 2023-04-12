@@ -24,6 +24,7 @@ export default defineConfig({
           intro: resolve(__dirname, './src/1-Basics/1-Intro/index.html'),
           cube: resolve(__dirname, './src/1-Basics/2-Cube/index.html'),
           diamondCube: resolve(__dirname, './src/1-Basics/3-DiamondCube/index.html'),
+          door: resolve(__dirname, './src/1-Basics/4-Door/index.html'),
           donuts: resolve(__dirname, './src/1-Basics/5-Donuts/index.html'),
           lights: resolve(__dirname, './src/2-ClassicTechniques/15-Lights/index.html'),
           shadows: resolve(__dirname, './src/2-ClassicTechniques/16-Shadows/index.html'),
