@@ -5,14 +5,14 @@ import * as dat from 'lil-gui';
 // Setup
 const gui = new dat.GUI();
 const sizes = {
-    width: window.innerWidth,
-    height: window.innerHeight
+  width: window.innerWidth,
+  height: window.innerHeight
 };
 const canvas = document.querySelector('canvas.webgl');
 const scene = new THREE.Scene();
 const renderer = new THREE.WebGLRenderer({
-    canvas: canvas
-})
+  canvas: canvas
+});
 renderer.setSize(sizes.width, sizes.height);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 renderer.shadowMap.enabled = true;
@@ -62,18 +62,18 @@ grassRoughnessTexture.wrapT = THREE.RepeatWrapping;
 
 // Floor
 const floor = new THREE.Mesh(
-    new THREE.PlaneGeometry(20, 20),
-    new THREE.MeshStandardMaterial({
-        map: grassColorTexture,
-        aoMap: grassAmbientOcclusionTexture,
-        normalMap: grassNormalTexture,
-        roughnessMap: grassRoughnessTexture
-    })
+  new THREE.PlaneGeometry(20, 20),
+  new THREE.MeshStandardMaterial({
+    map: grassColorTexture,
+    aoMap: grassAmbientOcclusionTexture,
+    normalMap: grassNormalTexture,
+    roughnessMap: grassRoughnessTexture
+  })
 );
 floor.receiveShadow = true;
 floor.geometry.setAttribute(
-    'uv2',
-    new THREE.Float32BufferAttribute(floor.geometry.attributes.uv.array, 2)
+  'uv2',
+  new THREE.Float32BufferAttribute(floor.geometry.attributes.uv.array, 2)
 );
 
 floor.rotation.x = - Math.PI * 0.5;
@@ -85,49 +85,49 @@ const house = new THREE.Group();
 scene.add(house);
 
 const walls = new THREE.Mesh(
-    new THREE.BoxGeometry(4, 2.5, 4),
-    new THREE.MeshStandardMaterial({
-        map: bricksColorTexture,
-        aoMap: bricksAmbientOcclusionTexture,
-        normalMap: bricksNormalTexture,
-        roughnessMap: bricksRoughnessTexture
-    })
+  new THREE.BoxGeometry(4, 2.5, 4),
+  new THREE.MeshStandardMaterial({
+    map: bricksColorTexture,
+    aoMap: bricksAmbientOcclusionTexture,
+    normalMap: bricksNormalTexture,
+    roughnessMap: bricksRoughnessTexture
+  })
 );
 walls.castShadow = true;
 walls.geometry.setAttribute(
-    'uv2',
-    new THREE.Float32BufferAttribute(walls.geometry.attributes.uv.array, 2)
+  'uv2',
+  new THREE.Float32BufferAttribute(walls.geometry.attributes.uv.array, 2)
 );
 
 walls.position.y = 2.5 * 0.5;
 house.add(walls);
 
 const roof = new THREE.Mesh(
-    new THREE.ConeGeometry(3.5, 1, 4),
-    new THREE.MeshStandardMaterial({ color: '#b35f45' })
+  new THREE.ConeGeometry(3.5, 1, 4),
+  new THREE.MeshStandardMaterial({ color: '#b35f45' })
 );
 roof.position.y = 2.5 + 0.5;
 roof.rotation.y = Math.PI * 0.25;
 house.add(roof);
 
 const door = new THREE.Mesh(
-    new THREE.PlaneGeometry(2.2, 2.2, 100, 100),
-    new THREE.MeshStandardMaterial({
-        map: doorColorTexture,
-        transparent: true,
-        alphaMap: doorAlphaTexture,
-        aoMap: doorAmbientOcclusionTexture,
-        displacementMap: doorHeightTexture,
-        displacementScale: 0.1,
-        metalnessMap: doorMetalnessTexture,
-        normalMap: doorNormalTexture,
-        roughnessMap: doorRoughnessTexture
-    })
+  new THREE.PlaneGeometry(2.2, 2.2, 100, 100),
+  new THREE.MeshStandardMaterial({
+    map: doorColorTexture,
+    transparent: true,
+    alphaMap: doorAlphaTexture,
+    aoMap: doorAmbientOcclusionTexture,
+    displacementMap: doorHeightTexture,
+    displacementScale: 0.1,
+    metalnessMap: doorMetalnessTexture,
+    normalMap: doorNormalTexture,
+    roughnessMap: doorRoughnessTexture
+  })
 );
 
 door.geometry.setAttribute(
-    'uv2',
-    new THREE.Float32BufferAttribute(door.geometry.attributes.uv.array, 2)
+  'uv2',
+  new THREE.Float32BufferAttribute(door.geometry.attributes.uv.array, 2)
 );
 
 door.position.z = 2 + 0.01;
@@ -171,17 +171,17 @@ const graveMaterial = new THREE.MeshStandardMaterial({ color: '#b2b6b1' });
 
 for (let i = 0; i < 50; i++)
 {
-    const angle = Math.random() * Math.PI * 2;
-    const radius = 3 + Math.random() * 6;
-    const x = Math.sin(angle) * radius;
-    const z = Math.cos(angle) * radius;
+  const angle = Math.random() * Math.PI * 2;
+  const radius = 3 + Math.random() * 6;
+  const x = Math.sin(angle) * radius;
+  const z = Math.cos(angle) * radius;
 
-    const grave = new THREE.Mesh(graveGeometry, graveMaterial);
-    grave.castShadow = true;
-    grave.position.set(x, 0.3, z);
-    grave.rotation.z = (Math.random() - 0.5) * 0.4;
-    grave.rotation.y = (Math.random() - 0.5) * 0.4;
-    graves.add(grave);
+  const grave = new THREE.Mesh(graveGeometry, graveMaterial);
+  grave.castShadow = true;
+  grave.position.set(x, 0.3, z);
+  grave.rotation.z = (Math.random() - 0.5) * 0.4;
+  grave.rotation.y = (Math.random() - 0.5) * 0.4;
+  graves.add(grave);
 }
 
 // Ghosts
@@ -258,48 +258,48 @@ const clock = new THREE.Clock();
 
 const tick = () =>
 {
-    const elapsedTime = clock.getElapsedTime();
+  const elapsedTime = clock.getElapsedTime();
 
-    // Update ghosts
-    const ghost1Angle = elapsedTime * 0.5;
-    ghost1.position.x = Math.cos(ghost1Angle) * 4;
-    ghost1.position.z = Math.sin(ghost1Angle) * 4;
-    ghost1.position.y = Math.sin(elapsedTime * 3);
+  // Update ghosts
+  const ghost1Angle = elapsedTime * 0.5;
+  ghost1.position.x = Math.cos(ghost1Angle) * 4;
+  ghost1.position.z = Math.sin(ghost1Angle) * 4;
+  ghost1.position.y = Math.sin(elapsedTime * 3);
 
-    const ghost2Angle = -elapsedTime * 0.32;
-    ghost2.position.x = Math.cos(ghost2Angle) * 5;
-    ghost2.position.z = Math.sin(ghost2Angle) * 5;
-    ghost2.position.y = Math.sin(elapsedTime * 4) + Math.sin(elapsedTime * 2.5);
+  const ghost2Angle = -elapsedTime * 0.32;
+  ghost2.position.x = Math.cos(ghost2Angle) * 5;
+  ghost2.position.z = Math.sin(ghost2Angle) * 5;
+  ghost2.position.y = Math.sin(elapsedTime * 4) + Math.sin(elapsedTime * 2.5);
 
-    const ghost3Angle = -elapsedTime * 0.18;
-    ghost3.position.x = Math.cos(ghost3Angle) * (7 + Math.sin(elapsedTime * 0.32));
-    ghost3.position.z = Math.sin(ghost3Angle) * (7 + Math.sin(elapsedTime * 0.5));
-    ghost3.position.y = Math.sin(elapsedTime * 4) + Math.sin(elapsedTime * 2.5);
+  const ghost3Angle = -elapsedTime * 0.18;
+  ghost3.position.x = Math.cos(ghost3Angle) * (7 + Math.sin(elapsedTime * 0.32));
+  ghost3.position.z = Math.sin(ghost3Angle) * (7 + Math.sin(elapsedTime * 0.5));
+  ghost3.position.y = Math.sin(elapsedTime * 4) + Math.sin(elapsedTime * 2.5);
 
-    // Update controls
-    controls.update();
+  // Update controls
+  controls.update();
 
-    // Render
-    renderer.render(scene, camera);
+  // Render
+  renderer.render(scene, camera);
 
-    // Call tick again on the next frame
-    window.requestAnimationFrame(tick);
-}
+  // Call tick again on the next frame
+  window.requestAnimationFrame(tick);
+};
 
 tick();
 
 // Event Listeners
 window.addEventListener('resize', () =>
 {
-    // Update sizes
-    sizes.width = window.innerWidth;
-    sizes.height = window.innerHeight;
+  // Update sizes
+  sizes.width = window.innerWidth;
+  sizes.height = window.innerHeight;
 
-    // Update camera
-    camera.aspect = sizes.width / sizes.height;
-    camera.updateProjectionMatrix();
+  // Update camera
+  camera.aspect = sizes.width / sizes.height;
+  camera.updateProjectionMatrix();
 
-    // Update renderer
-    renderer.setSize(sizes.width, sizes.height);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-})
+  // Update renderer
+  renderer.setSize(sizes.width, sizes.height);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+});
