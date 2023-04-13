@@ -31,6 +31,7 @@ export default defineConfig({
           hauntedHouse: resolve(__dirname, './src/ClassicTechniques/HauntedHouse/index.html'),
           waves: resolve(__dirname, './src/ClassicTechniques/Waves/index.html'),
           ripple: resolve(__dirname, './src/ClassicTechniques/Ripple/index.html'),
+          galaxy: resolve(__dirname, './src/ClassicTechniques/Galaxy/index.html'),
         }
       },
       outDir: '../dist',
