@@ -134,6 +134,7 @@ let startTime = clock.getElapsedTime();
 const tick = () =>
 {
   const elapsedTime = clock.getElapsedTime() - startTime;
+  const initialElapsedTime = clock.getElapsedTime();
 
   particleGeometry.setAttribute('position', new THREE.BufferAttribute(positions.slice(0, phase.particleCount * 3), 3));
   particleGeometry.setAttribute('color', new THREE.BufferAttribute(colors.slice(0, phase.particleCount * 3), 3));
@@ -143,9 +144,9 @@ const tick = () =>
     const x = particleGeometry.attributes.position.array[i3];
     const z = particleGeometry.attributes.position.array[i3 + 2];
     if (Math.sqrt(Math.pow(point.x-x, 2) + Math.pow(point.z-z, 2), 2) > elapsedTime*8) {
-      particleGeometry.attributes.position.array[i3 + 1] = phase.restingAmplitude * (Math.cos(clock.getElapsedTime() + x/4) + Math.sin(clock.getElapsedTime() + z/4));
+      particleGeometry.attributes.position.array[i3 + 1] = phase.restingAmplitude * (Math.cos(initialElapsedTime + x/4) + Math.sin(initialElapsedTime + z/4));
     } else {
-      particleGeometry.attributes.position.array[i3 + 1] = phase.restingAmplitude * (Math.cos(clock.getElapsedTime() + x/4) + Math.sin(clock.getElapsedTime() + z/4)) + Math.pow(Math.E, 0.5 - elapsedTime) * ((phase.waveAmplitude * (1/Math.cosh((x)/4))) * Math.cos(elapsedTime*4 + (Math.sqrt(Math.pow(point.x-x, 2) + Math.pow(point.z-z, 2), 2)) * 0.5) + (phase.waveAmplitude * (1/Math.cosh((z)/4))) * Math.sin(elapsedTime*4 + (Math.sqrt(Math.pow(point.x-x, 2) + Math.pow(point.z-z, 2), 2)) * 0.5));
+      particleGeometry.attributes.position.array[i3 + 1] = phase.restingAmplitude * (Math.cos(initialElapsedTime + x/4) + Math.sin(initialElapsedTime + z/4)) + Math.pow(Math.E, 0.5 - elapsedTime) * ((phase.waveAmplitude * (1/Math.cosh((x)/4))) * Math.cos(elapsedTime*4 + (Math.sqrt(Math.pow(point.x-x, 2) + Math.pow(point.z-z, 2), 2)) * 0.5) + (phase.waveAmplitude * (1/Math.cosh((z)/4))) * Math.sin(elapsedTime*4 + (Math.sqrt(Math.pow(point.x-x, 2) + Math.pow(point.z-z, 2), 2)) * 0.5));
     }
   }
 
