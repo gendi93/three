@@ -32,6 +32,7 @@ export default defineConfig({
           ripple: resolve(__dirname, './src/ClassicTechniques/Ripple/index.html'),
           galaxy: resolve(__dirname, './src/ClassicTechniques/Galaxy/index.html'),
           scroll: resolve(__dirname, './src/ClassicTechniques/Scroll/index.html'),
+          physics: resolve(__dirname, './src/AdvancedTechniques/Physics/index.html'),
         }
       },
       outDir: '../dist',
