@@ -3,7 +3,13 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { FontLoader } from 'three/examples/jsm/loaders/FontLoader.js';
 
 const fontLoader = new FontLoader();
-// // let font;
+const textureLoader = new THREE.TextureLoader();
+const chanceTexture = textureLoader.load('/textures/monopoly/chance.png');
+const communityTexture = textureLoader.load('/textures/monopoly/communityChest.png');
+const electricTexture = textureLoader.load('/textures/monopoly/electricCompany.png');
+const waterTexture = textureLoader.load('/textures/monopoly/waterWorks.png');
+const luxuryTexture = textureLoader.load('/textures/monopoly/luxuryTax.png');
+
 const canvas = document.querySelector('canvas.webgl');
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0xFFFFFF);
@@ -21,6 +27,7 @@ const tiles = [
   },
   {
     title: 'Community Chest',
+    map: communityTexture,
     color: 0xD4FCDA,
     divider: true,
     header: false
@@ -51,6 +58,7 @@ const tiles = [
   },
   {
     title: 'Chance',
+    map: chanceTexture,
     color: 0xD4FCDA,
     divider: true,
     header: false
@@ -75,6 +83,7 @@ const tiles = [
   },
   {
     title: 'Electric Company',
+    map: electricTexture,
     color: 'white',
     divider: true,
     header: true
@@ -105,6 +114,7 @@ const tiles = [
   },
   {
     title: 'Community Chest',
+    map: communityTexture,
     color: 0xD4FCDA,
     divider: true,
     header: false
@@ -129,6 +139,7 @@ const tiles = [
   },
   {
     title: 'Chance',
+    map: chanceTexture,
     color: 0xD4FCDA,
     divider: true,
     header: false
@@ -165,6 +176,7 @@ const tiles = [
   },
   {
     title: 'Water Works',
+    map: waterTexture,
     color: 'white',
     divider: true,
     header: true
@@ -189,6 +201,7 @@ const tiles = [
   },
   {
     title: 'Community Chest',
+    map: communityTexture,
     color: 0xD4FCDA,
     divider: true,
     header: false
@@ -207,6 +220,7 @@ const tiles = [
   },
   {
     title: 'Chance',
+    map: chanceTexture,
     color: 0xD4FCDA,
     divider: true,
     header: false
@@ -219,6 +233,7 @@ const tiles = [
   },
   {
     title: 'Luxury Tax',
+    map: luxuryTexture,
     color: 0xD4FCDA,
     divider: true,
     header: false
@@ -270,8 +285,15 @@ const createTile = (i, j) => {
   const material = new THREE.MeshStandardMaterial({
     color: tileData.color,
   });
+  const bodyMaterial = new THREE.MeshStandardMaterial({
+    color: 0xD4FCDA,
+  });
+  if (tileData.map) {
+    bodyMaterial.map = tileData.map;
+    bodyMaterial.color = null;
+  }
   const header = new THREE.Mesh(boardGeometry, material);
-  const body = new THREE.Mesh(boardGeometry, boardMaterial);
+  const body = new THREE.Mesh(boardGeometry, bodyMaterial);
 
   const widthScale = scale / numRowTiles;
   const heightScale = (1 - scale) / 2;
@@ -314,14 +336,28 @@ const createTile = (i, j) => {
       tile.add(headerDivider);
     }
     header.scale.set(widthScale, 1, headerHeightScale);
-    body.scale.set(widthScale, 1, bodyHeightScale);
+    if (tileData.map) {
+      body.scale.set(widthScale, 1, heightScale);
+    } else {
+      body.scale.set(widthScale, 1, bodyHeightScale);
+      tile.add(header);
+    }
     if (j < numRowTiles) {
       header.position.set(positiveHorizontalPosition, 0.02, -distanceToHeader);
-      body.position.set(positiveHorizontalPosition, 0.02, -distanceToBody);
+      if (tileData.map) {
+        body.position.set(positiveHorizontalPosition, 0.02, -distanceToTile);
+      } else {
+        body.position.set(positiveHorizontalPosition, 0.02, -distanceToBody);
+      }
+      body.rotation.set(0, 0, Math.PI);
     } else {
       material.color.set(tiles[j + numRowTiles].color);
       header.position.set(negativeHorizontalPosition, 0.02, distanceToHeader);
-      body.position.set(negativeHorizontalPosition, 0.02, distanceToBody);
+      if (tileData.map) {
+        body.position.set(negativeHorizontalPosition, 0.02, distanceToTile);
+      } else {
+        body.position.set(negativeHorizontalPosition, 0.02, distanceToBody);
+      }
     }
   } else {
     if (tileData.divider) {
@@ -345,19 +381,36 @@ const createTile = (i, j) => {
       tile.add(headerDivider);
     }
     header.scale.set(headerHeightScale,  1, widthScale);
-    body.scale.set(bodyHeightScale,  1, widthScale);
+    if (tileData.map) {
+      body.scale.set(widthScale, 1, heightScale);
+    } else {
+      body.scale.set(widthScale, 1, bodyHeightScale);
+      tile.add(header);
+    }
     if (j < numRowTiles) {
+      body.rotation.set(0, Math.PI/2, 0);
+
       material.color.set(tiles[j + numRowTiles].color);
       header.position.set(distanceToHeader, 0.02, positiveHorizontalPosition);
-      body.position.set(distanceToBody, 0.02, positiveHorizontalPosition);
+      if (tileData.map) {
+        body.position.set(distanceToTile, 0.02, positiveHorizontalPosition);
+      } else {
+        body.position.set(distanceToBody, 0.02, positiveHorizontalPosition);
+      }
     } else {
+      body.rotation.set(0, 3*Math.PI/2, 0);
+
       material.color.set(tiles[j + numRowTiles * 2].color);
       header.position.set(-distanceToHeader, 0.02, negativeHorizontalPosition);
-      body.position.set(-distanceToBody, 0.02, negativeHorizontalPosition);
+      if (tileData.map) {
+        body.position.set(-distanceToTile, 0.02, negativeHorizontalPosition);
+      } else {
+        body.position.set(-distanceToBody, 0.02, negativeHorizontalPosition);
+      }
     }
   }
 
-  tile.add(header, body);
+  tile.add(body);
 
   return tile;
 };
