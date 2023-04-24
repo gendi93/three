@@ -1,8 +1,69 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
-import { FontLoader } from 'three/examples/jsm/loaders/FontLoader.js';
+import * as CANNON from 'cannon-es';
+import * as dat from 'lil-gui';
 
-const fontLoader = new FontLoader();
+const gui = new dat.GUI();
+let dice = [];
+const removeDice = () => {
+  for (const die of dice) {
+    scene.remove(die.mesh);
+    world.removeBody(die.body);
+  }
+  dice.splice(0, dice.length);
+};
+const debugOptions = {
+  throwDice: () => {
+    removeDice();
+    const die1 = new THREE.Mesh(
+      new THREE.BoxGeometry(0.25, 0.25, 0.25),
+      new THREE.MeshBasicMaterial({ color: 0x000000 })
+    );
+    const die2 = new THREE.Mesh(
+      new THREE.BoxGeometry(0.25, 0.25, 0.25),
+      new THREE.MeshBasicMaterial({ color: 0x000000 })
+    );
+    die1.position.set(1.5, 2, 1);
+    die1.rotation.set(Math.random() * Math.PI, Math.random() * Math.PI, Math.random() * Math.PI);
+    die2.position.set(1, 2, 1.5);
+    die2.rotation.set(Math.random() * Math.PI, Math.random() * Math.PI, Math.random() * Math.PI);
+
+    const shape = new CANNON.Box(new CANNON.Vec3(0.25/2, 0.25/2, 0.25/2));
+    const body1 = new CANNON.Body({
+      mass: 1,
+      shape
+    });
+    const body2 = new CANNON.Body({
+      mass: 1,
+      shape
+    });
+    body1.position.copy(die1.position);
+    body1.quaternion.copy(die1.quaternion);
+    body2.position.copy(die2.position);
+    body2.quaternion.copy(die2.quaternion);
+
+    const force1 = -Math.random() * 100;
+    const force2 = -Math.random() * 100;
+    body1.applyForce(new CANNON.Vec3(force1, force1, force1), new CANNON.Vec3(0, 0, 0));
+    body2.applyForce(new CANNON.Vec3(force2, force2, force2), new CANNON.Vec3(0, 0, 0));
+    world.addBody(body1);
+    world.addBody(body2);
+    dice.push({
+      mesh: die1,
+      body: body1,
+    }, {
+      mesh: die2,
+      body: body2,
+    });
+
+    scene.add(die1, die2);
+  },
+  reset: removeDice
+};
+
+gui.add(debugOptions, 'throwDice');
+gui.add(debugOptions, 'reset');
+
 const textureLoader = new THREE.TextureLoader();
 const textures = [];
 
