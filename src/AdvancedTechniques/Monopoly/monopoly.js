@@ -3,7 +3,7 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import * as CANNON from 'cannon-es';
 import * as dat from 'lil-gui';
 
-import { tileMapGenerator, cornerMapGenerator } from './helpers.js';
+import { tileMapGenerator, cornerMapGenerator, cardMapGenerator } from './helpers.js';
 
 const gui = new dat.GUI();
 let dice = [];
@@ -67,6 +67,7 @@ gui.add(debugOptions, 'throwDice');
 gui.add(debugOptions, 'reset');
 
 const maps = tileMapGenerator();
+const cards = cardMapGenerator();
 
 const canvas = document.querySelector('canvas.webgl');
 const scene = new THREE.Scene();
@@ -78,8 +79,10 @@ world.allowSleep = true;
 world.gravity.set(0, -9.82, 0);
 
 const boardSize = 10;
-const scale = 0.728;
-const innerBoardSize = boardSize * scale;
+const innerBoardScale = 0.728;
+const cardHeightScale = 0.168144;
+const cardWidthScale = 0.1;
+const innerBoardSize = boardSize * innerBoardScale;
 const numRowTiles = 9;
 const defaultMaterial = new CANNON.Material('default');
 
@@ -94,6 +97,8 @@ const defaultContactMaterial = new CANNON.ContactMaterial(
 world.defaultContactMaterial = defaultContactMaterial;
 world.addContactMaterial(defaultContactMaterial);
 
+const cardMaterial = new THREE.MeshBasicMaterial({ color: 'white' });
+
 const boardMaterial = new THREE.MeshBasicMaterial({ color: 0xD4FCDA });
 const boardGeometry = new THREE.BoxGeometry(boardSize, 0.02, boardSize);
 
@@ -106,7 +111,6 @@ const board = new THREE.Mesh(
   boardMaterial
 );
 boardGroup.add(board);
-scene.add(boardGroup);
 
 const innerBoard = new THREE.Mesh(
   new THREE.BoxGeometry(innerBoardSize, 0.02, innerBoardSize),
@@ -124,7 +128,6 @@ innerBoardBody.quaternion.setFromAxisAngle(new CANNON.Vec3(-1, 0, 0), Math.PI * 
 world.addBody(innerBoardBody);
 
 const createTile = (i, j) => {
-  const tile = new THREE.Group();
   let map;
   if (i === 0) {
     if (j < numRowTiles) {
@@ -140,10 +143,10 @@ const createTile = (i, j) => {
     }
   }
   const bodyMaterial = new THREE.MeshBasicMaterial({ map });
-  const body = new THREE.Mesh(boardGeometry, bodyMaterial);
+  const tile = new THREE.Mesh(boardGeometry, bodyMaterial);
 
-  const widthScale = scale / numRowTiles;
-  const heightScale = (1 - scale) / 2;
+  const widthScale = innerBoardScale / numRowTiles;
+  const heightScale = (1 - innerBoardScale) / 2;
 
   const width = widthScale * boardSize;
   const height = heightScale * boardSize;
@@ -155,27 +158,38 @@ const createTile = (i, j) => {
   const negativeHorizontalPosition = distanceToEdge - width * (j - numRowTiles);
 
   if (i === 0) {
-    body.scale.set(widthScale, 1, heightScale);
+    tile.scale.set(widthScale, 1, heightScale);
     if (j < numRowTiles) {
-      body.position.set(positiveHorizontalPosition, 0.02, -distanceToTile);
-      body.rotation.set(0, 0, Math.PI);
+      tile.position.set(positiveHorizontalPosition, 0.02, -distanceToTile);
+      tile.rotation.set(0, 0, Math.PI);
     } else {
-      body.position.set(negativeHorizontalPosition, 0.02, distanceToTile);
+      tile.position.set(negativeHorizontalPosition, 0.02, distanceToTile);
     }
   } else {
-    body.scale.set(widthScale, 1, heightScale);
+    tile.scale.set(widthScale, 1, heightScale);
     if (j < numRowTiles) {
-      body.rotation.set(0, Math.PI/2, 0);
-      body.position.set(distanceToTile, 0.02, positiveHorizontalPosition);
+      tile.rotation.set(0, Math.PI/2, 0);
+      tile.position.set(distanceToTile, 0.02, positiveHorizontalPosition);
     } else {
-      body.rotation.set(0, 3*Math.PI/2, 0);
-      body.position.set(-distanceToTile, 0.02, negativeHorizontalPosition);
+      tile.rotation.set(0, 3*Math.PI/2, 0);
+      tile.position.set(-distanceToTile, 0.02, negativeHorizontalPosition);
     }
   }
 
-  tile.add(body);
-
   return tile;
+};
+
+const createCard = (type, index) => {
+  const cardMap = cards[type][index];
+  const cardMaterials = [
+    cardMaterial,
+    cardMaterial,
+    new THREE.MeshBasicMaterial({ map: cardMap[1] }),
+    new THREE.MeshBasicMaterial({ map: cardMap[0] }),
+    cardMaterial,
+    cardMaterial
+  ];
+  return new THREE.Mesh(boardGeometry, cardMaterials);
 };
 
 const { goTexture, jailTexture, parkingTexture, arrestTexture } = cornerMapGenerator();
@@ -197,33 +211,22 @@ border1.scale.set(0.002, 3, 1);
 border2.scale.set(1.004, 3, 0.002);
 border3.scale.set(0.002, 3, 1);
 border4.scale.set(1.004, 3, 0.002);
-goCorner.scale.set((1 - scale) / 2, 1, (1 - scale) / 2);
-jailCorner.scale.set((1 - scale) / 2, 1, (1 - scale) / 2);
-parkingCorner.scale.set((1 - scale) / 2, 1, (1 - scale) / 2);
-arrestCorner.scale.set((1 - scale) / 2, 1, (1 - scale) / 2);
+goCorner.scale.set((1 - innerBoardScale) / 2, 1, (1 - innerBoardScale) / 2);
+jailCorner.scale.set((1 - innerBoardScale) / 2, 1, (1 - innerBoardScale) / 2);
+parkingCorner.scale.set((1 - innerBoardScale) / 2, 1, (1 - innerBoardScale) / 2);
+arrestCorner.scale.set((1 - innerBoardScale) / 2, 1, (1 - innerBoardScale) / 2);
 border1.position.set(-boardSize / 2 - 0.01, 0.02, 0);
 border2.position.set(0, 0.02, -boardSize / 2 - 0.01);
 border3.position.set(boardSize / 2 + 0.01, 0.02, 0);
 border4.position.set(0, 0.02, boardSize / 2 + 0.01);
-goCorner.position.set(-boardSize / 2 + (boardSize * (1 - scale) / 2) / 2, 0.02, -boardSize / 2 + (boardSize * (1 - scale) / 2) / 2);
-jailCorner.position.set(boardSize / 2 - (boardSize * (1 - scale) / 2) / 2, 0.02, -boardSize / 2 + (boardSize * (1 - scale) / 2) / 2);
-parkingCorner.position.set(boardSize / 2 - (boardSize * (1 - scale) / 2) / 2, 0.02, boardSize / 2 - (boardSize * (1 - scale) / 2) / 2);
-arrestCorner.position.set(-boardSize / 2 + (boardSize * (1 - scale) / 2) / 2, 0.02, boardSize / 2 - (boardSize * (1 - scale) / 2) / 2);
+goCorner.position.set(-boardSize / 2 + (boardSize * (1 - innerBoardScale) / 2) / 2, 0.02, -boardSize / 2 + (boardSize * (1 - innerBoardScale) / 2) / 2);
+jailCorner.position.set(boardSize / 2 - (boardSize * (1 - innerBoardScale) / 2) / 2, 0.02, -boardSize / 2 + (boardSize * (1 - innerBoardScale) / 2) / 2);
+parkingCorner.position.set(boardSize / 2 - (boardSize * (1 - innerBoardScale) / 2) / 2, 0.02, boardSize / 2 - (boardSize * (1 - innerBoardScale) / 2) / 2);
+arrestCorner.position.set(-boardSize / 2 + (boardSize * (1 - innerBoardScale) / 2) / 2, 0.02, boardSize / 2 - (boardSize * (1 - innerBoardScale) / 2) / 2);
 
 boardGroup.add(border1, border2, border3, border4, goCorner, jailCorner, parkingCorner, arrestCorner);
 boardGroup.rotation.y = Math.PI;
 
-const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
-scene.add(ambientLight);
-
-const directionalLight = new THREE.DirectionalLight(0xffffff, 0.2);
-directionalLight.position.set(0, 5, 0);
-scene.add(directionalLight);
-
-const sizes = {
-  width: window.innerWidth,
-  height: window.innerHeight
-};
 
 for (let i = 0; i < 2; i++) {
   for (let j = 0; j < numRowTiles * 2; j++) {
@@ -232,6 +235,36 @@ for (let i = 0; i < 2; i++) {
     boardGroup.add(tile);
   }
 }
+scene.add(boardGroup);
+
+for (let i = 0; i < 16; i++) {
+  const card = createCard('chance', i);
+  card.scale.set(cardHeightScale, 0.1, cardWidthScale);
+  card.rotation.y = Math.PI / 4;
+  card.position.set(1.5, 0.002 * i + 0.02, 1.5);
+  scene.add(card);
+}
+
+for (let i = 0; i < 16; i++) {
+  const card = createCard('community', i);
+  card.scale.set(cardHeightScale, 0.1, cardWidthScale);
+  card.rotation.y = -3 * Math.PI / 4;
+  card.position.set(-1.5, 0.002 * i + 0.02, -1.5);
+  scene.add(card);
+}
+
+for (let i = 0; i < 28; i++) {
+  const card = createCard('deed', i);
+  card.scale.set(cardHeightScale, 0.1, cardWidthScale);
+  card.rotation.y = Math.PI / 2;
+  card.position.set(0, 0.002 * i + 0.02, 0);
+  scene.add(card);
+}
+
+const sizes = {
+  width: window.innerWidth,
+  height: window.innerHeight
+};
 
 window.addEventListener('resize', () =>
 {

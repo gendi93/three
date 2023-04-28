@@ -1,5 +1,5 @@
 
-export const mapNames = [
+export const tileNames = [
   'oldKentRoad',
   'communityChest',
   'whitechapelRoad',
@@ -36,4 +36,75 @@ export const mapNames = [
   'parkLane',
   'luxuryTax',
   'mayfair'
+];
+
+export const chanceCard = 'chance';
+export const chanceNames = [
+  'advanceGo',
+  'advanceTrafalgar',
+  'advanceMayfair',
+  'advancePallMall',
+  'advanceStation1',
+  'advanceStation2',
+  'advanceUtility',
+  'bank',
+  'outOfJail',
+  'back4',
+  'jail',
+  'repairs',
+  'fine',
+  'trip',
+  'chairman',
+  'collect'
+];
+
+export const communityCard = 'community';
+export const communityNames = [
+  'advanceGo',
+  'collect',
+  'doctor',
+  'stock',
+  'outOfJail',
+  'jail',
+  'holiday',
+  'refund',
+  'birthday',
+  'insurance',
+  'hospital',
+  'school',
+  'receive',
+  'repairs',
+  'contest',
+  'inheritance'
+];
+
+export const deedNames = [
+  'oldKentRoad',
+  'whitechapelRoad',
+  'kingsCrossStation',
+  'islington',
+  'eustonRoad',
+  'pentonvilleRoad',
+  'pallMall',
+  'electricCompany',
+  'whitehall',
+  'northumberlandAvenue',
+  'maryleboneStation',
+  'bowStreet',
+  'marlboroughStreet',
+  'vineStreet',
+  'strand',
+  'fleetStreet',
+  'trafalgarSquare',
+  'fenchurchStreetStation',
+  'leicesterSquare',
+  'coventryStreet',
+  'waterWorks',
+  'piccadilly',
+  'regentStreet',
+  'oxfordStreet',
+  'bondStreet',
+  'liverpoolStreetStation',
+  'parkLane',
+  'mayfair',
 ];
