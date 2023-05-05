@@ -270,6 +270,25 @@ for (let i = 0; i < 28; i++) {
   scene.add(card);
 }
 
+const pieceGeometry = new THREE.CylinderGeometry(0.1, 0.1, 0.3, 16);
+const redMaterial = new THREE.MeshBasicMaterial({ color: 'red' });
+const blueMaterial = new THREE.MeshBasicMaterial({ color: 'blue' });
+// const greenMaterial = new THREE.MeshBasicMaterial({ color: 'green' });
+// const yellowMaterial = new THREE.MeshBasicMaterial({ color: 'yellow' });
+const redPiece = new THREE.Mesh(pieceGeometry, redMaterial);
+const bluePiece = new THREE.Mesh(pieceGeometry, blueMaterial);
+// const cylinder3 = new THREE.Mesh(pieceGeometry, greenMaterial);
+// const cylinder4 = new THREE.Mesh(pieceGeometry, yellowMaterial);
+
+const players = [{name: 'Player 1', piece: redPiece}, {name: 'Player 2', piece: bluePiece}];
+game.initializeGame(players);
+
+redPiece.position.set(boardSize / 2 - 0.5, 0.2, boardSize / 2 - 0.5);
+bluePiece.position.set(boardSize / 2 - 0.8, 0.2, boardSize / 2 - 0.5);
+// cylinder3.position.set(boardSize / 2 - 0.5, 0.2, boardSize / 2 - 0.8);
+// cylinder4.position.set(boardSize / 2 - 0.8, 0.2, boardSize / 2 - 0.8);
+scene.add(redPiece, bluePiece);
+
 const sizes = {
   width: window.innerWidth,
   height: window.innerHeight
