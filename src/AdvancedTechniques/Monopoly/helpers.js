@@ -99,3 +99,19 @@ export const cardMapGenerator = () => {
 
   return maps;
 };
+
+export const diceMapsGenerator = () => {
+  const maps = [];
+
+  [1,2,3,4,5,6].forEach((num) => {
+    const map = textureLoader.load(`/textures/monopoly/dice/${num}.png`);
+
+    map.generateMipmaps = false;
+    map.minFilter = THREE.NearestFilter;
+    map.magFilter = THREE.NearestFilter;
+
+    maps.push(map);
+  });
+
+  return maps;
+};

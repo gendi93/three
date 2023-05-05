@@ -14,57 +14,129 @@ const removeDice = () => {
   }
   dice.splice(0, dice.length);
 };
+
+const diceMaps = diceMapsGenerator();
+const diceGeometry = new THREE.BoxGeometry(0.25, 0.25, 0.25);
+const diceMaterials = [
+  new THREE.MeshBasicMaterial({ map: diceMaps[4] }),
+  new THREE.MeshBasicMaterial({ map: diceMaps[2] }),
+  new THREE.MeshBasicMaterial({ map: diceMaps[1] }),
+  new THREE.MeshBasicMaterial({ map: diceMaps[3] }),
+  new THREE.MeshBasicMaterial({ map: diceMaps[0] }),
+  new THREE.MeshBasicMaterial({ map: diceMaps[5] })
+];
+
+const checkSide = (body) => {
+  body.allowSleep = false;
+  const euler = new CANNON.Vec3();
+  body.quaternion.toEuler(euler);
+      
+  const eps = 0.1;
+  let isZero = (angle) => Math.abs(angle) < eps;
+  let isHalfPi = (angle) => Math.abs(angle - .5 * Math.PI) < eps;
+  let isMinusHalfPi = (angle) => Math.abs(.5 * Math.PI + angle) < eps;
+  let isPiOrMinusPi = (angle) => (Math.abs(Math.PI - angle) < eps || Math.abs(Math.PI + angle) < eps);
+
+  if (isZero(euler.z)) {
+    if (isZero(euler.x)) {
+      return 2;
+    } else if (isHalfPi(euler.x)) {
+      return 6;
+    } else if (isMinusHalfPi(euler.x)) {
+      return 1;
+    } else if (isPiOrMinusPi(euler.x)) {
+      return 4;
+    } else {
+      // landed on edge => wait to fall on side and fire the event again
+      body.allowSleep = true;
+    }
+  } else if (isHalfPi(euler.z)) {
+    return 5;
+  } else if (isMinusHalfPi(euler.z)) {
+    return 3;
+  } else {
+    // landed on edge => wait to fall on side and fire the event again
+    body.allowSleep = true;
+  }
+};
+
 const debugOptions = {
   throwDice: () => {
     removeDice();
-    const die1 = new THREE.Mesh(
-      new THREE.BoxGeometry(0.25, 0.25, 0.25),
-      new THREE.MeshBasicMaterial({ color: 0x000000 })
-    );
-    const die2 = new THREE.Mesh(
-      new THREE.BoxGeometry(0.25, 0.25, 0.25),
-      new THREE.MeshBasicMaterial({ color: 0x000000 })
-    );
+    const diceRoll = {
+      doubles: false,
+      total: 0,
+      values: [0, 0],
+    };
+    const die1 = new THREE.Mesh(diceGeometry, diceMaterials);
+    const die2 = new THREE.Mesh(diceGeometry, diceMaterials);
+
     die1.position.set(1.5, 2, 1);
     die1.rotation.set(Math.random() * Math.PI, Math.random() * Math.PI, Math.random() * Math.PI);
     die2.position.set(1, 2, 1.5);
     die2.rotation.set(Math.random() * Math.PI, Math.random() * Math.PI, Math.random() * Math.PI);
 
-    const shape = new CANNON.Box(new CANNON.Vec3(0.25/2, 0.25/2, 0.25/2));
-    const body1 = new CANNON.Body({
+    const shape = new CANNON.Box(new CANNON.Vec3(0.25 / 2, 0.25 / 2, 0.25 / 2));
+    const dieBody1 = new CANNON.Body({
       mass: 1,
-      shape
+      shape,
+      sleepTimeLimit: 0.1
     });
-    const body2 = new CANNON.Body({
+    const dieBody2 = new CANNON.Body({
       mass: 1,
-      shape
+      shape,
+      sleepTimeLimit: 0.1
     });
-    body1.position.copy(die1.position);
-    body1.quaternion.copy(die1.quaternion);
-    body2.position.copy(die2.position);
-    body2.quaternion.copy(die2.quaternion);
+    dieBody1.position.copy(die1.position);
+    dieBody1.quaternion.copy(die1.quaternion);
+    dieBody2.position.copy(die2.position);
+    dieBody2.quaternion.copy(die2.quaternion);
 
     const force1 = -Math.random() * 100;
     const force2 = -Math.random() * 100;
-    body1.applyForce(new CANNON.Vec3(force1, force1, force1), new CANNON.Vec3(0, 0, 0));
-    body2.applyForce(new CANNON.Vec3(force2, force2, force2), new CANNON.Vec3(0, 0, 0));
-    world.addBody(body1);
-    world.addBody(body2);
+    dieBody1.applyForce(new CANNON.Vec3(force1, force1, force1), new CANNON.Vec3(0, 0, 0));
+    dieBody2.applyForce(new CANNON.Vec3(force2, force2, force2), new CANNON.Vec3(0, 0, 0));
+
+    let roll1, roll2;
+    dieBody1.addEventListener('sleep', () => {
+      roll1 = checkSide(dieBody1);
+
+      diceRoll.values[0] = roll1;
+      diceRoll.total += roll1;
+      if (diceRoll.values[1] === roll1) diceRoll.doubles = true;
+    });
+
+    dieBody2.addEventListener('sleep', () => {
+      roll2 = checkSide(dieBody2);
+
+      diceRoll.values[1] = roll2;
+      diceRoll.total += roll2;
+      if (diceRoll.values[0] === roll2) diceRoll.doubles = true;
+
+    });
+
+    world.addBody(dieBody1);
+    world.addBody(dieBody2);
     dice.push({
       mesh: die1,
-      body: body1,
+      body: dieBody1,
     }, {
       mesh: die2,
-      body: body2,
+      body: dieBody2,
     });
 
     scene.add(die1, die2);
   },
-  reset: removeDice
+  reset: removeDice,
+  resolveTile: () => {
+    const player = game.getCurrentPlayer();
+    player.resolveTile(game.map[player.position]);
+  }
 };
 
 gui.add(debugOptions, 'throwDice');
 gui.add(debugOptions, 'reset');
+gui.add(debugOptions, 'resolveTile');
 
 const maps = tileMapGenerator();
 const cards = cardMapGenerator();
@@ -83,7 +155,6 @@ const innerBoardScale = 0.728;
 const cardHeightScale = 0.168144;
 const cardWidthScale = 0.1;
 const innerBoardSize = boardSize * innerBoardScale;
-const numRowTiles = 9;
 const defaultMaterial = new CANNON.Material('default');
 
 const defaultContactMaterial = new CANNON.ContactMaterial(
