@@ -1,13 +1,13 @@
 import * as THREE from 'three';
-import { tileNames, chanceNames, communityNames, deedNames } from './config';
+import { tiles, chanceNames, communityNames, deedNames } from './config';
 
 const textureLoader = new THREE.TextureLoader();
 
 export const tileMapGenerator = () => {
   const maps = [];
 
-  tileNames.forEach((name) => {
-    const map = textureLoader.load(`/textures/monopoly/tiles/${name}.png`);
+  tiles.forEach(config => {
+    const map = textureLoader.load(`/textures/monopoly/tiles/${config.name}.png`);
 
     map.generateMipmaps = false;
     map.minFilter = THREE.NearestFilter;
