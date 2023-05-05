@@ -3,7 +3,12 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import * as CANNON from 'cannon-es';
 import * as dat from 'lil-gui';
 
-import { tileMapGenerator, cornerMapGenerator, cardMapGenerator } from './helpers.js';
+import { Monopoly } from './game/monopoly/Monopoly';
+import { tiles } from './config';
+
+const game = new Monopoly();
+
+import { tileMapGenerator, cardMapGenerator, diceMapsGenerator } from './helpers.js';
 
 const gui = new dat.GUI();
 let dice = [];
@@ -98,12 +103,18 @@ const debugOptions = {
     dieBody2.applyForce(new CANNON.Vec3(force2, force2, force2), new CANNON.Vec3(0, 0, 0));
 
     let roll1, roll2;
+    const player = game.getCurrentPlayer();
+
     dieBody1.addEventListener('sleep', () => {
       roll1 = checkSide(dieBody1);
 
       diceRoll.values[0] = roll1;
       diceRoll.total += roll1;
       if (diceRoll.values[1] === roll1) diceRoll.doubles = true;
+
+      if (!!diceRoll.values[0] && !!diceRoll.values[1]) {
+        player.takeTurn(diceRoll);
+      }
     });
 
     dieBody2.addEventListener('sleep', () => {
@@ -113,6 +124,9 @@ const debugOptions = {
       diceRoll.total += roll2;
       if (diceRoll.values[0] === roll2) diceRoll.doubles = true;
 
+      if (!!diceRoll.values[0] && !!diceRoll.values[1]) {
+        player.takeTurn(diceRoll);
+      }
     });
 
     world.addBody(dieBody1);
