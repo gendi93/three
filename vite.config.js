@@ -34,6 +34,7 @@ export default defineConfig({
           scroll: resolve(__dirname, './src/ClassicTechniques/Scroll/index.html'),
           physics: resolve(__dirname, './src/AdvancedTechniques/Physics/index.html'),
           monopoly: resolve(__dirname, './src/AdvancedTechniques/Monopoly/index.html'),
+          models: resolve(__dirname, './src/AdvancedTechniques/ImportedModels/index.html'),
         }
       },
       outDir: '../dist',
