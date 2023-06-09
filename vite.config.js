@@ -35,6 +35,7 @@ export default defineConfig({
           physics: resolve(__dirname, './src/AdvancedTechniques/Physics/index.html'),
           monopoly: resolve(__dirname, './src/AdvancedTechniques/Monopoly/index.html'),
           models: resolve(__dirname, './src/AdvancedTechniques/ImportedModels/index.html'),
+          raycaster: resolve(__dirname, './src/AdvancedTechniques/RayCaster/index.html'),
         }
       },
       outDir: '../dist',
