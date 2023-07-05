@@ -9,5 +9,5 @@ export class Bank {
   
   constructor() {
     this.money = 10000;
-  };
+  }
 }

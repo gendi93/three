@@ -2,11 +2,14 @@ import * as THREE from 'three';
 import { tiles, chanceNames, communityNames, deedNames } from './config';
 
 const textureLoader = new THREE.TextureLoader();
+type Map = THREE.Texture;
+type Maps = Map[];
+type CardMaps = { chance: Maps; community: Maps; deed: Maps };
 
-export const tileMapGenerator = () => {
-  const maps = [];
+export const tileMapGenerator: () => Maps = () => {
+  const maps: Maps = [];
 
-  tiles.forEach(config => {
+  tiles.forEach((config) => {
     const map = textureLoader.load(`/textures/monopoly/tiles/${config.name}.png`);
 
     map.generateMipmaps = false;
@@ -44,11 +47,11 @@ export const cornerMapGenerator = () => {
   return { goTexture, jailTexture, parkingTexture, arrestTexture };
 };
 
-export const cardMapGenerator = () => {
-  const maps = {
+export const cardMapGenerator: () => CardMaps = () => {
+  const maps: CardMaps = {
     chance: [],
     community: [],
-    deed: [],
+    deed: []
   };
 
   chanceNames.forEach((name) => {
@@ -100,10 +103,10 @@ export const cardMapGenerator = () => {
   return maps;
 };
 
-export const diceMapsGenerator = () => {
-  const maps = [];
+export const diceMapsGenerator: () => Map[] = () => {
+  const maps: Map[] = [];
 
-  [1,2,3,4,5,6].forEach((num) => {
+  [1, 2, 3, 4, 5, 6].forEach((num) => {
     const map = textureLoader.load(`/textures/monopoly/dice/${num}.png`);
 
     map.generateMipmaps = false;

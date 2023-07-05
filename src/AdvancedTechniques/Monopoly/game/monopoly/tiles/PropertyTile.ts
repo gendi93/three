@@ -48,7 +48,7 @@ export class PropertyTile {
 
   auction = (player: Player) => {
     const activePlayers = player.game.getActivePlayers();
-    let biddingPlayers = activePlayers.map(player => ({player, bidding: true}));
+    const biddingPlayers = activePlayers.map(player => ({player, bidding: true}));
     let bid = 1;
     let highestBidder = player;
 

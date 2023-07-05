@@ -1,13 +1,6 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
-import * as dat from 'lil-gui';
-
-/**
- * Base
- */
-// Debug
-const gui = new dat.GUI();
 
 // Canvas
 const canvas = document.querySelector('canvas.webgl');
@@ -26,12 +19,11 @@ gltfLoader.load('/models/Duck/glTF/Duck.gltf', (gltf) => {
   scene.add(duck);
 });
 
-
 const object1 = new THREE.Mesh(
   new THREE.SphereGeometry(0.5, 16, 16),
   new THREE.MeshBasicMaterial({ color: '#ff0000' })
 );
-object1.position.x = - 2;
+object1.position.x = -2;
 
 const object2 = new THREE.Mesh(
   new THREE.SphereGeometry(0.5, 16, 16),
@@ -66,8 +58,7 @@ const sizes = {
   height: window.innerHeight
 };
 
-window.addEventListener('resize', () =>
-{
+window.addEventListener('resize', () => {
   // Update sizes
   sizes.width = window.innerWidth;
   sizes.height = window.innerHeight;
@@ -83,7 +74,7 @@ window.addEventListener('resize', () =>
 
 const mouse = new THREE.Vector2();
 window.addEventListener('mousemove', (event) => {
-  mouse.x = event.clientX / sizes.width * 2 - 1;
+  mouse.x = (event.clientX / sizes.width) * 2 - 1;
   mouse.y = -(event.clientY / sizes.height) * 2 + 1;
 });
 
@@ -92,29 +83,28 @@ window.addEventListener('click', () => {
   if (currentIntersect) {
     console.log(currentIntersect);
     switch (currentIntersect.object) {
-    case object1:
-      console.log('click on object 1');
-      break;
-    case object2:
-      console.log('click on object 2');
-      break;
-    case object3:
-      console.log('click on object 3');
-      break;
-    case duck:
-      if (clicked) {
-        console.log('clicked duck');
-        duck.scale.set(1,1,1);
-      } else {
-        console.log('unclicked duck');
-        duck.scale.set(1.2,1.2,1.2);
-      }
-      clicked = !clicked;
-      break;
+      case object1:
+        console.log('click on object 1');
+        break;
+      case object2:
+        console.log('click on object 2');
+        break;
+      case object3:
+        console.log('click on object 3');
+        break;
+      case duck:
+        if (clicked) {
+          console.log('clicked duck');
+          duck.scale.set(1, 1, 1);
+        } else {
+          console.log('unclicked duck');
+          duck.scale.set(1.2, 1.2, 1.2);
+        }
+        clicked = !clicked;
+        break;
     }
   }
 });
-
 
 /**
  * Camera
@@ -144,8 +134,7 @@ const clock = new THREE.Clock();
 
 let currentIntersect = null;
 
-const tick = () =>
-{
+const tick = () => {
   const elapsedTime = clock.getElapsedTime();
 
   object1.position.y = Math.sin(elapsedTime * 0.3) * 1.5;
@@ -153,7 +142,7 @@ const tick = () =>
   object3.position.y = Math.sin(elapsedTime * 1.4) * 1.5;
 
   raycaster.setFromCamera(mouse, camera);
-  
+
   const objectsToTest = [object1, object2, object3];
   const intersects = raycaster.intersectObjects(objectsToTest);
 
@@ -168,7 +157,6 @@ const tick = () =>
     }
     currentIntersect = null;
   }
-        
 
   for (const object of objectsToTest) {
     object.material.color.set('#ff0000');
@@ -180,7 +168,7 @@ const tick = () =>
   if (duck) {
     const modelIntersects = raycaster.intersectObject(duck);
     if (modelIntersects.length) {
-      currentIntersect = {object:duck};
+      currentIntersect = { object: duck };
     }
   }
 

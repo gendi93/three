@@ -8,11 +8,18 @@ import { tiles } from './config';
 
 const game = new Monopoly();
 
-import { tileMapGenerator, cardMapGenerator, diceMapsGenerator } from './helpers.js';
+import { tileMapGenerator, cardMapGenerator, diceMapsGenerator } from './helpers';
+
+type Die = {
+  mesh: THREE.Mesh;
+  body: CANNON.Body;
+};
+
+type Dice = Die[];
 
 const gui = new dat.GUI();
-let dice = [];
-const removeDice = () => {
+const dice: Dice = [];
+const removeDice: () => void = () => {
   for (const die of dice) {
     scene.remove(die.mesh);
     world.removeBody(die.body);
@@ -31,16 +38,17 @@ const diceMaterials = [
   new THREE.MeshBasicMaterial({ map: diceMaps[5] })
 ];
 
-const checkSide = (body) => {
+const checkSide = (body: CANNON.Body) => {
   body.allowSleep = false;
   const euler = new CANNON.Vec3();
   body.quaternion.toEuler(euler);
-      
+
   const eps = 0.1;
-  let isZero = (angle) => Math.abs(angle) < eps;
-  let isHalfPi = (angle) => Math.abs(angle - .5 * Math.PI) < eps;
-  let isMinusHalfPi = (angle) => Math.abs(.5 * Math.PI + angle) < eps;
-  let isPiOrMinusPi = (angle) => (Math.abs(Math.PI - angle) < eps || Math.abs(Math.PI + angle) < eps);
+  const isZero = (angle: number) => Math.abs(angle) < eps;
+  const isHalfPi = (angle: number) => Math.abs(angle - 0.5 * Math.PI) < eps;
+  const isMinusHalfPi = (angle: number) => Math.abs(0.5 * Math.PI + angle) < eps;
+  const isPiOrMinusPi = (angle: number) =>
+    Math.abs(Math.PI - angle) < eps || Math.abs(Math.PI + angle) < eps;
 
   if (isZero(euler.z)) {
     if (isZero(euler.x)) {
@@ -71,7 +79,7 @@ const debugOptions = {
     const diceRoll = {
       doubles: false,
       total: 0,
-      values: [0, 0],
+      values: [0, 0]
     };
     const die1 = new THREE.Mesh(diceGeometry, diceMaterials);
     const die2 = new THREE.Mesh(diceGeometry, diceMaterials);
@@ -92,10 +100,10 @@ const debugOptions = {
       shape,
       sleepTimeLimit: 0.1
     });
-    dieBody1.position.copy(die1.position);
-    dieBody1.quaternion.copy(die1.quaternion);
-    dieBody2.position.copy(die2.position);
-    dieBody2.quaternion.copy(die2.quaternion);
+    dieBody1.position.copy(new CANNON.Vec3(...die1.position.toArray()));
+    dieBody1.quaternion.copy(new CANNON.Quaternion(...die1.quaternion.toArray()));
+    dieBody1.position.copy(new CANNON.Vec3(...die2.position.toArray()));
+    dieBody1.quaternion.copy(new CANNON.Quaternion(...die2.quaternion.toArray()));
 
     const force1 = -Math.random() * 100;
     const force2 = -Math.random() * 100;
@@ -131,13 +139,16 @@ const debugOptions = {
 
     world.addBody(dieBody1);
     world.addBody(dieBody2);
-    dice.push({
-      mesh: die1,
-      body: dieBody1,
-    }, {
-      mesh: die2,
-      body: dieBody2,
-    });
+    dice.push(
+      {
+        mesh: die1,
+        body: dieBody1
+      },
+      {
+        mesh: die2,
+        body: dieBody2
+      }
+    );
 
     scene.add(die1, die2);
   },
@@ -155,9 +166,9 @@ gui.add(debugOptions, 'resolveTile');
 const maps = tileMapGenerator();
 const cards = cardMapGenerator();
 
-const canvas = document.querySelector('canvas.webgl');
+const canvas: Element = document.querySelector('canvas.webgl') || document.createElement('canvas');
 const scene = new THREE.Scene();
-scene.background = new THREE.Color(0xFFFFFF);
+scene.background = new THREE.Color(0xffffff);
 
 const world = new CANNON.World();
 world.broadphase = new CANNON.SAPBroadphase(world);
@@ -171,30 +182,23 @@ const cardWidthScale = 0.1;
 const innerBoardSize = boardSize * innerBoardScale;
 const defaultMaterial = new CANNON.Material('default');
 
-const defaultContactMaterial = new CANNON.ContactMaterial(
-  defaultMaterial,
-  defaultMaterial,
-  {
-    friction: 0.7,
-    restitution: 0.3
-  }
-);
+const defaultContactMaterial = new CANNON.ContactMaterial(defaultMaterial, defaultMaterial, {
+  friction: 0.7,
+  restitution: 0.3
+});
 world.defaultContactMaterial = defaultContactMaterial;
 world.addContactMaterial(defaultContactMaterial);
 
 const cardMaterial = new THREE.MeshBasicMaterial({ color: 'white' });
 
-const boardMaterial = new THREE.MeshBasicMaterial({ color: 0xD4FCDA });
+const boardMaterial = new THREE.MeshBasicMaterial({ color: 0xd4fcda });
 const boardGeometry = new THREE.BoxGeometry(boardSize, 0.02, boardSize);
 
 const lineMaterial = new THREE.MeshBasicMaterial({ color: 'black' });
 const lineGeometry = new THREE.BoxGeometry(boardSize, 0.02, boardSize);
 
 const boardGroup = new THREE.Group();
-const board = new THREE.Mesh(
-  boardGeometry,
-  boardMaterial
-);
+const board = new THREE.Mesh(boardGeometry, boardMaterial);
 boardGroup.add(board);
 
 const innerBoard = new THREE.Mesh(
@@ -207,7 +211,7 @@ const innerBoardShape = new CANNON.Plane();
 const innerBoardBody = new CANNON.Body({
   mass: 0,
   position: new CANNON.Vec3(0, 0.02, 0),
-  shape: innerBoardShape,
+  shape: innerBoardShape
 });
 innerBoardBody.quaternion.setFromAxisAngle(new CANNON.Vec3(-1, 0, 0), Math.PI * 0.5);
 world.addBody(innerBoardBody);
@@ -217,9 +221,9 @@ const createTile = (config, index) => {
   const bodyMaterial = new THREE.MeshBasicMaterial({ map });
   const tile = new THREE.Mesh(boardGeometry, bodyMaterial);
 
-  tile.position.set(...config.position);
-  tile.scale.set(...config.scale);
-  tile.rotation.set(...config.rotation);
+  tile.position.set(config.position[0], config.position[1], config.position[2]);
+  tile.scale.set(config.scale[0], config.scale[1], config.scale[2]);
+  tile.rotation.set(config.rotation[0], config.rotation[1], config.rotation[2]);
 
   return tile;
 };
@@ -255,7 +259,7 @@ boardGroup.add(border1, border2, border3, border4);
 
 tiles.forEach((config, index) => {
   const tile = createTile(config, index);
-      
+
   boardGroup.add(tile);
 });
 scene.add(boardGroup);
@@ -271,7 +275,7 @@ for (let i = 0; i < 16; i++) {
 for (let i = 0; i < 16; i++) {
   const card = createCard('community', i);
   card.scale.set(cardHeightScale, 0.1, cardWidthScale);
-  card.rotation.y = -3 * Math.PI / 4;
+  card.rotation.y = (-3 * Math.PI) / 4;
   card.position.set(-1.5, 0.002 * i + 0.02, -1.5);
   scene.add(card);
 }
@@ -294,7 +298,10 @@ const bluePiece = new THREE.Mesh(pieceGeometry, blueMaterial);
 // const cylinder3 = new THREE.Mesh(pieceGeometry, greenMaterial);
 // const cylinder4 = new THREE.Mesh(pieceGeometry, yellowMaterial);
 
-const players = [{name: 'Player 1', piece: redPiece}, {name: 'Player 2', piece: bluePiece}];
+const players = [
+  { name: 'Player 1', piece: redPiece },
+  { name: 'Player 2', piece: bluePiece }
+];
 game.initializeGame(players);
 
 redPiece.position.set(boardSize / 2 - 0.5, 0.2, boardSize / 2 - 0.5);
@@ -308,8 +315,7 @@ const sizes = {
   height: window.innerHeight
 };
 
-window.addEventListener('resize', () =>
-{
+window.addEventListener('resize', () => {
   sizes.width = window.innerWidth;
   sizes.height = window.innerHeight;
 
@@ -324,11 +330,11 @@ const camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height, 0.1, 
 camera.position.set(0, 8, 0);
 scene.add(camera);
 
-const controls = new OrbitControls(camera, canvas);
+const controls = new OrbitControls(camera, canvas as HTMLElement);
 controls.enableDamping = true;
 
 const renderer = new THREE.WebGLRenderer({
-  canvas: canvas,
+  canvas: canvas
 });
 renderer.setSize(sizes.width, sizes.height);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
@@ -336,8 +342,7 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 const clock = new THREE.Clock();
 let oldElapsedTime = 0;
 
-const tick = () =>
-{
+const tick = () => {
   const elapsedTime = clock.getElapsedTime();
   const deltaTime = elapsedTime - oldElapsedTime;
   oldElapsedTime = elapsedTime;
@@ -346,8 +351,8 @@ const tick = () =>
   world.step(1 / 60, deltaTime, 3);
 
   for (const die of dice) {
-    die.mesh.position.copy(die.body.position);
-    die.mesh.quaternion.copy(die.body.quaternion);
+    die.mesh.position.copy(new THREE.Vector3(...die.body.position.toArray()));
+    die.mesh.quaternion.copy(new THREE.Quaternion(...die.body.quaternion.toArray()));
   }
 
   // Update controls

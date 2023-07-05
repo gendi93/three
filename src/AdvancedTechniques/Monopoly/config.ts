@@ -13,14 +13,14 @@ const height = heightScale * boardSize;
 
 const distanceToTile = boardSize / 2 - height / 2;
 const distanceToEdge = innerBoardSize / 2 - width / 2;
-const distanceToCorner = boardSize / 2 - (boardSize * (1 - innerBoardScale) / 2) / 2;
+const distanceToCorner = boardSize / 2 - (boardSize * (1 - innerBoardScale)) / 2 / 2;
 
 export const tiles = [
   {
     name: 'go',
     position: [distanceToCorner, 0.02, distanceToCorner],
     scale: [(1 - innerBoardScale) / 2, 1, (1 - innerBoardScale) / 2],
-    rotation: [0, Math.PI/2, 0]
+    rotation: [0, Math.PI / 2, 0]
   },
   {
     name: 'oldKentRoad',
@@ -86,60 +86,61 @@ export const tiles = [
     name: 'pallMall',
     position: [-distanceToTile, 0.02, distanceToEdge],
     scale: [widthScale, 1, heightScale],
-    rotation: [0, 3*Math.PI/2, 0]
+    rotation: [0, (3 * Math.PI) / 2, 0]
   },
   {
     name: 'electricCompany',
     position: [-distanceToTile, 0.02, distanceToEdge - width],
     scale: [widthScale, 1, heightScale],
-    rotation: [0, 3*Math.PI/2, 0]
+    rotation: [0, (3 * Math.PI) / 2, 0]
   },
   {
     name: 'whitehall',
     position: [-distanceToTile, 0.02, distanceToEdge - 2 * width],
     scale: [widthScale, 1, heightScale],
-    rotation: [0, 3*Math.PI/2, 0]
+    rotation: [0, (3 * Math.PI) / 2, 0]
   },
   {
     name: 'northumberlandAvenue',
     position: [-distanceToTile, 0.02, distanceToEdge - 3 * width],
     scale: [widthScale, 1, heightScale],
-    rotation: [0, 3*Math.PI/2, 0]
+    rotation: [0, (3 * Math.PI) / 2, 0]
   },
   {
     name: 'marylebone',
     position: [-distanceToTile, 0.02, distanceToEdge - 4 * width],
     scale: [widthScale, 1, heightScale],
-    rotation: [0, 3*Math.PI/2, 0]
+    rotation: [0, (3 * Math.PI) / 2, 0]
   },
   {
     name: 'bowStreet',
     position: [-distanceToTile, 0.02, distanceToEdge - 5 * width],
     scale: [widthScale, 1, heightScale],
-    rotation: [0, 3*Math.PI/2, 0]
+    rotation: [0, (3 * Math.PI) / 2, 0]
   },
   {
     name: 'chanceRed',
     position: [-distanceToTile, 0.02, distanceToEdge - 6 * width],
     scale: [widthScale, 1, heightScale],
-    rotation: [0, 3*Math.PI/2, 0]
+    rotation: [0, (3 * Math.PI) / 2, 0]
   },
   {
     name: 'marlboroughStreet',
     position: [-distanceToTile, 0.02, distanceToEdge - 7 * width],
     scale: [widthScale, 1, heightScale],
-    rotation: [0, 3*Math.PI/2, 0]
+    rotation: [0, (3 * Math.PI) / 2, 0]
   },
   {
     name: 'vineStreet',
     position: [-distanceToTile, 0.02, distanceToEdge - 8 * width],
     scale: [widthScale, 1, heightScale],
-    rotation: [0, 3*Math.PI/2, 0]
-  },{
+    rotation: [0, (3 * Math.PI) / 2, 0]
+  },
+  {
     name: 'parking',
     position: [-distanceToCorner, 0.02, -distanceToCorner],
     scale: [(1 - innerBoardScale) / 2, 1, (1 - innerBoardScale) / 2],
-    rotation: [0, -Math.PI/2, 0]
+    rotation: [0, -Math.PI / 2, 0]
   },
   {
     name: 'strand',
@@ -205,55 +206,55 @@ export const tiles = [
     name: 'oxfordStreet',
     position: [distanceToTile, 0.02, -distanceToEdge],
     scale: [widthScale, 1, heightScale],
-    rotation: [0, Math.PI/2, 0]
+    rotation: [0, Math.PI / 2, 0]
   },
   {
     name: 'regentStreet',
     position: [distanceToTile, 0.02, -distanceToEdge + width],
     scale: [widthScale, 1, heightScale],
-    rotation: [0, Math.PI/2, 0]
+    rotation: [0, Math.PI / 2, 0]
   },
   {
     name: 'communityChest',
     position: [distanceToTile, 0.02, -distanceToEdge + 2 * width],
     scale: [widthScale, 1, heightScale],
-    rotation: [0, Math.PI/2, 0]
+    rotation: [0, Math.PI / 2, 0]
   },
   {
     name: 'bondStreet',
     position: [distanceToTile, 0.02, -distanceToEdge + 3 * width],
     scale: [widthScale, 1, heightScale],
-    rotation: [0, Math.PI/2, 0]
+    rotation: [0, Math.PI / 2, 0]
   },
   {
     name: 'liverpoolSt',
     position: [distanceToTile, 0.02, -distanceToEdge + 4 * width],
     scale: [widthScale, 1, heightScale],
-    rotation: [0, Math.PI/2, 0]
+    rotation: [0, Math.PI / 2, 0]
   },
   {
     name: 'chanceRed',
     position: [distanceToTile, 0.02, -distanceToEdge + 5 * width],
     scale: [widthScale, 1, heightScale],
-    rotation: [0, Math.PI/2, 0]
+    rotation: [0, Math.PI / 2, 0]
   },
   {
     name: 'parkLane',
     position: [distanceToTile, 0.02, -distanceToEdge + 6 * width],
     scale: [widthScale, 1, heightScale],
-    rotation: [0, Math.PI/2, 0]
+    rotation: [0, Math.PI / 2, 0]
   },
   {
     name: 'luxuryTax',
     position: [distanceToTile, 0.02, -distanceToEdge + 7 * width],
     scale: [widthScale, 1, heightScale],
-    rotation: [0, Math.PI/2, 0]
+    rotation: [0, Math.PI / 2, 0]
   },
   {
     name: 'mayfair',
     position: [distanceToTile, 0.02, -distanceToEdge + 8 * width],
     scale: [widthScale, 1, heightScale],
-    rotation: [0, Math.PI/2, 0]
+    rotation: [0, Math.PI / 2, 0]
   }
 ];
 
@@ -325,5 +326,5 @@ export const deedNames = [
   'bondStreet',
   'liverpoolStreetStation',
   'parkLane',
-  'mayfair',
+  'mayfair'
 ];
