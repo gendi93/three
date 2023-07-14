@@ -1,21 +1,25 @@
+import { Mesh, Vector3 } from 'three';
+import { gsap } from 'gsap';
 import { BOARD_LENGTH, JAIL_POSITION } from './assets/Map';
 import { BANK, Monopoly } from './Monopoly';
 import { PropertyTile } from './tiles/PropertyTile';
 import { ActionTile } from './tiles/ActionTile';
-import { ActionType, PropertyType, TileType } from './tiles/tiles.types';
-import { Tile } from './tiles';
-import { DiceRoll } from './types';
+import { ActionType, BasicType, PropertyType, TileType } from './tiles/tiles.types';
+import { BasicTile, Tile } from './tiles';
+import { DiceRoll, ResolutionOptions, IntermediatePosition } from './types';
 
 import { tiles } from '../../config';
 
+const SECONDS_PER_TILE = 0.2;
+
 export type PlayerProps = {
   name: string;
-  piece: any;
+  piece: Mesh;
 };
 
 export class Player {
   name: string;
-  piece: any;
+  piece: Mesh;
   game: Monopoly;
   money: number;
   position: number;
@@ -26,8 +30,9 @@ export class Player {
   doublesCounter: number;
   getOutOfJailFreeCardCount: number;
   isActive: boolean;
+  isMoving: boolean;
 
-  constructor(name: string, piece: any, game: Monopoly) {
+  constructor(name: string, piece: Mesh, game: Monopoly) {
     this.name = name;
     this.piece = piece;
     this.game = game;
@@ -45,6 +50,7 @@ export class Player {
     this.jailTerm = 0;
     this.doublesCounter = 0;
     this.getOutOfJailFreeCardCount = 2;
+    this.isMoving = false;
   }
 
   gainGetOutOfJailFreeCard = () => {
@@ -92,11 +98,17 @@ export class Player {
     this.doublesCounter = 0;
   };
 
-  resolveTile = (tile: Tile): void => {
+  resolveTile = (tile: Tile, options?: ResolutionOptions): void => {
     const { type } = tile;
     switch (type) {
       case TileType.Basic:
-        console.log(`${this.name} arrived at ${tile.name}, ${tile.description}`);
+        if (
+          (tile as BasicTile).basicType === BasicType.Parking ||
+          (!this.isJailed() && (tile as BasicTile).basicType === BasicType.Jail)
+        ) {
+          console.log(`${this.name} arrived at ${tile.name}, ${tile.description}`);
+        }
+        if (!this.doublesCounter) this.game.incrementTurn();
         break;
       case TileType.Action: {
         const { actionType, action } = tile as ActionTile;
@@ -114,16 +126,16 @@ export class Player {
         break;
       }
       case TileType.Property:
-        this.resolveProperty(tile as PropertyTile);
+        this.resolveProperty(tile as PropertyTile, options);
         break;
       default:
         break;
     }
-    if (!this.doublesCounter) this.game.incrementTurn();
   };
 
-  resolveProperty = (tile: PropertyTile, modifier = 1) => {
+  resolveProperty = (tile: PropertyTile, options?: ResolutionOptions) => {
     const { name, owner } = tile;
+    const { modifier = 1 } = options || {};
     console.log(`${this.name} arrived at ${name} owned by ${owner?.name || 'nobody'}`);
 
     if (!owner) {
@@ -131,10 +143,12 @@ export class Player {
     } else if (owner.name !== this.name) {
       this.resolvePayment(tile, modifier);
     }
+    if (!this.doublesCounter) this.game.incrementTurn();
   };
 
   resolvePurchase = (tile: PropertyTile): void => {
     tile.purchase(this);
+    console.log(`${this.name} purchased ${tile.name}!`);
 
     const tilesInSet = this.game.map
       .filter((tile) => tile.type === TileType.Property)
@@ -221,7 +235,6 @@ export class Player {
       if (doubles) {
         console.log(`${this.name} rolled a double and got out of jail!`);
         this.resetJailTerm();
-        this.move(total);
       } else {
         console.log(`${this.name}'s jail term reduced`);
         this.reduceJailTerm();
@@ -242,21 +255,102 @@ export class Player {
     if (!this.jailTerm) {
       console.log(`${this.name} advances ${total} steps`);
       this.move(total);
+    } else {
+      this.game.incrementTurn();
     }
   };
 
-  move = (value: number): void => {
+  move = (value: number, options?: ResolutionOptions): void => {
     const newPosition = (this.position + value) % BOARD_LENGTH;
     if (newPosition < this.position) {
       this.receive(200);
       console.log(this.name, 'receives £200 salary');
     }
 
-    this.moveTo(newPosition);
+    this.moveTo(newPosition, options);
   };
 
-  moveTo = (position: number): void => {
-    this.position = position;
-    this.piece.position.set(...tiles[position].position);
+  moveTo = (position: number, options?: ResolutionOptions): void => {
+    const newCoordinates = new Vector3(...tiles[position].position);
+    this.isMoving = true;
+    const { endTurn = false, modifier = 1, direction = 'forward' } = options || {};
+
+    const positions: IntermediatePosition[] = [];
+
+    const tween = (positions: IntermediatePosition[], index = 0) => {
+      const { intermediatePosition, intermediateCoordinates } = positions[
+        index
+      ] as IntermediatePosition;
+      const temporaryPosition = position < this.position ? position + BOARD_LENGTH : position;
+      const intermediateDuration =
+        positions.length === 1
+          ? SECONDS_PER_TILE * (temporaryPosition - this.position)
+          : SECONDS_PER_TILE *
+            Math.abs(
+              (intermediatePosition === 0 ? BOARD_LENGTH : intermediatePosition) - this.position
+            );
+      console.log(
+        'tween from',
+        this.position,
+        'to',
+        intermediatePosition,
+        'in',
+        intermediateDuration,
+        'seconds'
+      );
+      gsap
+        .to(this.piece.position, {
+          x: intermediateCoordinates.x,
+          y: intermediateCoordinates.y + 0.15 - 0.02,
+          z: intermediateCoordinates.z,
+          duration: intermediateDuration,
+          ease: 'none'
+        })
+        .then(() => {
+          this.position = intermediatePosition;
+          if (index < positions.length - 1) {
+            console.log('moving from intermediate position to next position');
+            tween(positions, index + 1);
+          } else {
+            console.log('completed movement');
+            this.isMoving = false;
+            this.resolveTile(this.game.map[position], { modifier });
+            if (endTurn && !this.doublesCounter) this.game.incrementTurn();
+          }
+        });
+    };
+
+    console.log('pushing final position');
+    positions.push({
+      intermediatePosition: position,
+      intermediateCoordinates: newCoordinates
+    });
+
+    if (position < this.position || Math.floor(position / 10) !== Math.floor(this.position / 10)) {
+      if (direction === 'forward') {
+        let temporaryPosition = position < this.position ? position + BOARD_LENGTH : position;
+        console.log(
+          temporaryPosition,
+          Math.floor(temporaryPosition / 10),
+          Math.floor(this.position / 10)
+        );
+        while (Math.floor(temporaryPosition / 10) !== Math.floor(this.position / 10)) {
+          const intermediatePosition = (Math.floor(temporaryPosition / 10) * 10) % BOARD_LENGTH;
+          const intermediateCoordinates = new Vector3(...tiles[intermediatePosition].position);
+          if (intermediatePosition !== position) {
+            console.log('pushing intermediate position', intermediatePosition);
+            positions.push({
+              intermediatePosition,
+              intermediateCoordinates
+            });
+          }
+          temporaryPosition -= 10;
+        }
+      }
+    }
+    positions.reverse();
+
+    console.log(positions);
+    tween(positions);
   };
 }

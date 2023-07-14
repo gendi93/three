@@ -41,15 +41,17 @@ export class Monopoly {
   getCurrentPlayer = () => {
     // return Monopoly.players[Monopoly.turn % Monopoly.players.length];
     return this.players[this.turn % this.players.length];
-  }
+  };
 
   // static incrementTurn = (): void => {
   //   Monopoly.turn++;
   // }
 
   incrementTurn = (): void => {
+    const currentPlayer = this.getCurrentPlayer();
+    console.log(`${currentPlayer.name} ended their turn.`);
     this.turn++;
-  }
+  };
 
   // static setPlayerOrder = (playerData: PlayerProps[]): Player[] => {
   //   const players = [] as Player[];
@@ -69,13 +71,13 @@ export class Monopoly {
   //   const playersInOrder = playerRolls
   //     .sort((prevRoll, curRoll) => curRoll.value - prevRoll.value)
   //     .map(roll => roll.player);
-    
+
   //   return playersInOrder;
   // }
 
   setPlayerOrder = (playerData: PlayerProps[]): Player[] => {
     const players = [] as Player[];
-    const playerRolls = [] as {player: Player, value: number}[];
+    const playerRolls = [] as { player: Player; value: number }[];
 
     playerData.forEach((data: PlayerProps) => {
       const { name, piece } = data;
@@ -84,16 +86,16 @@ export class Monopoly {
     });
 
     // TODO: Redo if rolls are equal
-    players.forEach(player => {
-      playerRolls.push({player, value: rollDice().total});
-    })
+    players.forEach((player) => {
+      playerRolls.push({ player, value: rollDice().total });
+    });
 
     const playersInOrder = playerRolls
       .sort((prevRoll, curRoll) => curRoll.value - prevRoll.value)
-      .map(roll => roll.player);
-    
+      .map((roll) => roll.player);
+
     return playersInOrder;
-  }
+  };
 
   // static tileGenerator = (tileMap: TileData[]): Tile[] => {
   //   const map = tileMap.map(tileData => {
@@ -109,7 +111,7 @@ export class Monopoly {
   // }
 
   tileGenerator = (tileMap: TileData[]): Tile[] => {
-    const map = tileMap.map(tileData => {
+    const map = tileMap.map((tileData) => {
       const { type, data } = tileData;
 
       if (type === TileType.Action) return new ActionTile(data as ActionTileData);
@@ -119,7 +121,7 @@ export class Monopoly {
     });
 
     return map;
-  }
+  };
 
   // public static initializeGame = (playerData: PlayerProps[]): void => {
   //   this.players = this.setPlayerOrder(playerData);
@@ -131,15 +133,15 @@ export class Monopoly {
   public initializeGame = (playerData: PlayerProps[]): void => {
     this.players = this.setPlayerOrder(playerData);
     this.map = this.tileGenerator(TILE_MAP);
-    this.properties = this.map.filter(tile => tile.type === TileType.Property) as PropertyTile[];
+    this.properties = this.map.filter((tile) => tile.type === TileType.Property) as PropertyTile[];
     this.turn = 0;
-  }
+  };
 
   // public static getActivePlayers = (): Player[] => {
   //   return this.players.filter(player => player.isActive);
   // }
 
   getActivePlayers = (): Player[] => {
-    return this.players.filter(player => player.isActive);
-  }
+    return this.players.filter((player) => player.isActive);
+  };
 }

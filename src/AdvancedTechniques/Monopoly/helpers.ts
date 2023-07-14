@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { Card } from './game/monopoly/assets/Cards';
 import { tiles, chanceNames, communityNames, deedNames } from './config';
 
 const textureLoader = new THREE.TextureLoader();
@@ -117,4 +118,13 @@ export const diceMapsGenerator: () => Map[] = () => {
   });
 
   return maps;
+};
+
+export const shuffle = (array: Card[]) => {
+  const shuffledArray = [...array];
+  for (let i = shuffledArray.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffledArray[i], shuffledArray[j]] = [shuffledArray[j], shuffledArray[i]];
+  }
+  return shuffledArray;
 };

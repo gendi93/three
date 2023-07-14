@@ -2,6 +2,9 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import * as CANNON from 'cannon-es';
 import * as dat from 'lil-gui';
+import { gsap } from 'gsap';
+
+import { Dice } from './types';
 
 import { Monopoly } from './game/monopoly/Monopoly';
 import { tiles } from './config';
@@ -9,13 +12,6 @@ import { tiles } from './config';
 const game = new Monopoly();
 
 import { tileMapGenerator, cardMapGenerator, diceMapsGenerator } from './helpers';
-
-type Die = {
-  mesh: THREE.Mesh;
-  body: CANNON.Body;
-};
-
-type Dice = Die[];
 
 const gui = new dat.GUI();
 const dice: Dice = [];
@@ -38,7 +34,7 @@ const diceMaterials = [
   new THREE.MeshBasicMaterial({ map: diceMaps[5] })
 ];
 
-const checkSide = (body: CANNON.Body) => {
+const checkSide: (body: CANNON.Body) => number = (body: CANNON.Body) => {
   body.allowSleep = false;
   const euler = new CANNON.Vec3();
   body.quaternion.toEuler(euler);
@@ -50,31 +46,50 @@ const checkSide = (body: CANNON.Body) => {
   const isPiOrMinusPi = (angle: number) =>
     Math.abs(Math.PI - angle) < eps || Math.abs(Math.PI + angle) < eps;
 
+  let value: number;
+
   if (isZero(euler.z)) {
     if (isZero(euler.x)) {
-      return 2;
+      value = 2;
     } else if (isHalfPi(euler.x)) {
-      return 6;
+      value = 6;
     } else if (isMinusHalfPi(euler.x)) {
-      return 1;
+      value = 1;
     } else if (isPiOrMinusPi(euler.x)) {
-      return 4;
+      value = 4;
     } else {
       // landed on edge => wait to fall on side and fire the event again
       body.allowSleep = true;
+      value = -1;
     }
   } else if (isHalfPi(euler.z)) {
-    return 5;
+    value = 5;
   } else if (isMinusHalfPi(euler.z)) {
-    return 3;
+    value = 3;
   } else {
     // landed on edge => wait to fall on side and fire the event again
     body.allowSleep = true;
+    value = -1;
   }
+
+  return value;
 };
 
+let thrownDice = false;
 const debugOptions = {
   throwDice: () => {
+    const player = game.getCurrentPlayer();
+
+    if (thrownDice || player.isMoving) return;
+    thrownDice = true;
+
+    gsap.to(camera.position, {
+      x: -1,
+      y: 5,
+      z: -1,
+      duration: 1
+    });
+    controls.target.copy(board.position);
     removeDice();
     const diceRoll = {
       doubles: false,
@@ -102,38 +117,70 @@ const debugOptions = {
     });
     dieBody1.position.copy(new CANNON.Vec3(...die1.position.toArray()));
     dieBody1.quaternion.copy(new CANNON.Quaternion(...die1.quaternion.toArray()));
-    dieBody1.position.copy(new CANNON.Vec3(...die2.position.toArray()));
-    dieBody1.quaternion.copy(new CANNON.Quaternion(...die2.quaternion.toArray()));
+    dieBody2.position.copy(new CANNON.Vec3(...die2.position.toArray()));
+    dieBody2.quaternion.copy(new CANNON.Quaternion(...die2.quaternion.toArray()));
 
     const force1 = -Math.random() * 100;
     const force2 = -Math.random() * 100;
     dieBody1.applyForce(new CANNON.Vec3(force1, force1, force1), new CANNON.Vec3(0, 0, 0));
     dieBody2.applyForce(new CANNON.Vec3(force2, force2, force2), new CANNON.Vec3(0, 0, 0));
 
-    let roll1, roll2;
-    const player = game.getCurrentPlayer();
+    let roll1: number;
+    let roll2: number;
 
     dieBody1.addEventListener('sleep', () => {
       roll1 = checkSide(dieBody1);
+      if (roll1 < 0) {
+        dieBody1.applyForce(new CANNON.Vec3(force1, force1, force1), new CANNON.Vec3(0, 0, 0));
+        return;
+      }
 
       diceRoll.values[0] = roll1;
       diceRoll.total += roll1;
       if (diceRoll.values[1] === roll1) diceRoll.doubles = true;
 
       if (!!diceRoll.values[0] && !!diceRoll.values[1]) {
-        player.takeTurn(diceRoll);
+        setTimeout(() => {
+          controls.target.copy(player.piece.position);
+          gsap.to(camera.position, {
+            x: player.piece.position.x + 1,
+            y: player.piece.position.y + 1,
+            z: player.piece.position.z + 1,
+            duration: 0.5
+          });
+          setTimeout(() => {
+            player.takeTurn(diceRoll);
+            thrownDice = false;
+          }, 1000);
+        }, 1000);
       }
     });
 
     dieBody2.addEventListener('sleep', () => {
       roll2 = checkSide(dieBody2);
+      if (roll2 < 0) {
+        dieBody2.applyForce(new CANNON.Vec3(force2, force2, force2), new CANNON.Vec3(0, 0, 0));
+        return;
+      }
 
       diceRoll.values[1] = roll2;
       diceRoll.total += roll2;
       if (diceRoll.values[0] === roll2) diceRoll.doubles = true;
 
       if (!!diceRoll.values[0] && !!diceRoll.values[1]) {
-        player.takeTurn(diceRoll);
+        setTimeout(() => {
+          controls.target.copy(player.piece.position);
+          gsap.to(camera.position, {
+            x: player.piece.position.x + 1,
+            y: player.piece.position.y + 1,
+            z: player.piece.position.z + 1,
+            duration: 0.5
+          });
+          setTimeout(() => {
+            player.takeTurn(diceRoll);
+            thrownDice = false;
+          }, 1000);
+        }, 1000);
       }
     });
 
@@ -299,8 +346,8 @@ const bluePiece = new THREE.Mesh(pieceGeometry, blueMaterial);
 // const cylinder4 = new THREE.Mesh(pieceGeometry, yellowMaterial);
 
 const players = [
-  { name: 'Player 1', piece: redPiece },
-  { name: 'Player 2', piece: bluePiece }
+  { name: 'Red', piece: redPiece },
+  { name: 'Blue', piece: bluePiece }
 ];
 game.initializeGame(players);
 
@@ -353,6 +400,13 @@ const tick = () => {
   for (const die of dice) {
     die.mesh.position.copy(new THREE.Vector3(...die.body.position.toArray()));
     die.mesh.quaternion.copy(new THREE.Quaternion(...die.body.quaternion.toArray()));
+  }
+
+  const player = game.getCurrentPlayer();
+  if (player.isMoving) {
+    const piece = player.piece;
+    controls.target.copy(piece.position);
+    camera.position.set(piece.position.x + 1, piece.position.y + 1, piece.position.z + 1);
   }
 
   // Update controls

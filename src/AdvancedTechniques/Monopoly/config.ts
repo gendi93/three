@@ -203,13 +203,13 @@ export const tiles = [
     rotation: [0, Math.PI, 0]
   },
   {
-    name: 'oxfordStreet',
+    name: 'regentStreet',
     position: [distanceToTile, 0.02, -distanceToEdge],
     scale: [widthScale, 1, heightScale],
     rotation: [0, Math.PI / 2, 0]
   },
   {
-    name: 'regentStreet',
+    name: 'oxfordStreet',
     position: [distanceToTile, 0.02, -distanceToEdge + width],
     scale: [widthScale, 1, heightScale],
     rotation: [0, Math.PI / 2, 0]
