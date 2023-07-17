@@ -8,10 +8,14 @@ import { Dice } from './types';
 
 import { Monopoly } from './game/monopoly/Monopoly';
 import { tiles } from './config';
+import { tileMapGenerator, cardMapGenerator, diceMapsGenerator, CardData } from './helpers';
+import { CHANCE_CARDS, COMMUNITY_CARDS, Card } from './game/monopoly/assets/Cards';
 
 const game = new Monopoly();
-
-import { tileMapGenerator, cardMapGenerator, diceMapsGenerator } from './helpers';
+const playerId: HTMLElement = document.querySelector('#playerId') || document.createElement('h1');
+const money: Element = document.querySelector('#money') || document.createElement('h3');
+const properties: Element =
+  document.querySelector('#propertyList') || document.createElement('div');
 
 const gui = new dat.GUI();
 const dice: Dice = [];
@@ -392,10 +396,12 @@ window.addEventListener('resize', () => {
 });
 
 const camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height, 0.1, 100);
-camera.position.set(0, 8, 0);
+camera.name = 'camera';
+camera.position.set(-5, 5, 0);
 scene.add(camera);
 
 const controls = new OrbitControls(camera, canvas as HTMLElement);
+controls.target.set(0, -3, 0);
 controls.enableDamping = true;
 
 const renderer = new THREE.WebGLRenderer({
