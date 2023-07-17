@@ -20,6 +20,7 @@ export type PlayerProps = {
 export class Player {
   name: string;
   piece: Mesh;
+  direction: string;
   game: Monopoly;
   money: number;
   position: number;
@@ -32,9 +33,10 @@ export class Player {
   isActive: boolean;
   isMoving: boolean;
 
-  constructor(name: string, piece: Mesh, game: Monopoly) {
+  constructor(name: string, piece: Mesh, direction: string, game: Monopoly) {
     this.name = name;
     this.piece = piece;
+    this.direction = direction;
     this.game = game;
 
     this.isActive = true;
@@ -162,6 +164,57 @@ export class Player {
       console.log(`${this.name} has completed a set of properties!`);
       this.completedSets.push(tile.color);
     }
+
+  moveCardToPlayerSection = (deedCard: THREE.Mesh) => {
+    const position = { x: 0, y: 0, z: 0 };
+    const rotation = { x: 0, y: 0, z: 0 };
+    switch (this.direction) {
+      case 'n':
+        position.z = -6;
+        rotation.z = -Math.PI / 2;
+        break;
+      case 'ne':
+        position.x = -Math.sqrt(2 * Math.pow(5, 2)) + 1;
+        position.z = -Math.sqrt(2 * Math.pow(5, 2)) + 1;
+        rotation.z = (3 * Math.PI) / 4;
+        break;
+      case 'e':
+        position.x = -6;
+        break;
+      case 'se':
+        position.x = Math.sqrt(2 * Math.pow(5, 2)) - 1;
+        position.z = -Math.sqrt(2 * Math.pow(5, 2)) + 1;
+        rotation.z = (-3 * Math.PI) / 4;
+        break;
+      case 's':
+        position.z = 6;
+        rotation.z = Math.PI / 2;
+        break;
+      case 'sw':
+        position.x = Math.sqrt(2 * Math.pow(5, 2)) - 1;
+        position.z = Math.sqrt(2 * Math.pow(5, 2)) - 1;
+        rotation.z = (3 * Math.PI) / 4;
+        break;
+      case 'w':
+        position.x = 6;
+        rotation.z = Math.PI;
+        break;
+      case 'nw':
+        position.x = -Math.sqrt(2 * Math.pow(5, 2)) + 1;
+        position.z = Math.sqrt(2 * Math.pow(5, 2)) - 1;
+        rotation.z = Math.PI / 4;
+        break;
+    }
+
+    gsap.to(deedCard.position, {
+      ...position,
+      duration: 0.5
+    });
+    gsap.to(deedCard.rotation, {
+      ...rotation,
+      x: -Math.PI / 2,
+      duration: 0.5
+    });
   };
 
   resolvePayment = (tile: PropertyTile, modifier: number): void => {

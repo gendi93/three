@@ -4,6 +4,7 @@ import { Bank } from './Bank';
 import { Tile, BasicTile, PropertyTile, ActionTile } from './tiles';
 import { TileType } from './tiles/tiles.types';
 import { rollDice } from './helpers';
+import { PlayerPositions } from '../../config';
 
 export const BANK = new Bank();
 
@@ -78,10 +79,10 @@ export class Monopoly {
   setPlayerOrder = (playerData: PlayerProps[]): Player[] => {
     const players = [] as Player[];
     const playerRolls = [] as { player: Player; value: number }[];
-
-    playerData.forEach((data: PlayerProps) => {
+    const directions = PlayerPositions[playerData.length];
+    playerData.forEach((data: PlayerProps, index) => {
       const { name, piece } = data;
-      const player = new Player(name, piece, this);
+      const player = new Player(name, piece, directions[index], this);
       players.push(player);
     });
 

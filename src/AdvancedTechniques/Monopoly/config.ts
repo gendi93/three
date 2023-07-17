@@ -15,6 +15,16 @@ const distanceToTile = boardSize / 2 - height / 2;
 const distanceToEdge = innerBoardSize / 2 - width / 2;
 const distanceToCorner = boardSize / 2 - (boardSize * (1 - innerBoardScale)) / 2 / 2;
 
+export const PlayerPositions = {
+  2: ['e', 'w'],
+  3: ['n', 'e', 'w'],
+  4: ['n', 'e', 's', 'w'],
+  5: ['n', 'ne', 'e', 'nw', 'w'],
+  6: ['n', 'ne', 'e', 'nw', 'w', 's'],
+  7: ['n', 'ne', 'e', 'nw', 'w', 'sw', 's'],
+  8: ['n', 'ne', 'e', 'nw', 'w', 'sw', 's', 'se']
+};
+
 export const tiles = [
   {
     name: 'go',
