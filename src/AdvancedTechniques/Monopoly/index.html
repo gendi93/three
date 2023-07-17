@@ -7,6 +7,87 @@
     <link rel="stylesheet" href="./style.css" />
   </head>
   <body>
+    <div
+      style="
+        margin: 20px;
+        position: absolute;
+        z-index: 100;
+        background: white;
+        border: 1px solid black;
+        box-shadow: 0 0 10px #aaa;
+        border-radius: 20px;
+        padding: 10px 50px 10px 10px;
+      "
+    >
+      <h1 id="playerId"></h1>
+      <h3 id="money"></h3>
+      <div>
+        <h3>Properties:</h3>
+        <div
+          id="propertyList"
+          style="margin-top: 10px; display: flex; flex-flow: wrap; width: 300px"
+        ></div>
+      </div>
+    </div>
+    <div
+      id="purchaseModal"
+      style="
+        width: 500px;
+        height: 100px;
+        display: none;
+        grid-template-rows: 1fr 1fr;
+        grid-template-columns: 1fr 1fr;
+        grid-gap: 20px;
+        top: 80vh;
+        left: calc(50% - 271px);
+        position: absolute;
+        z-index: 100;
+        background: white;
+        border: 1px solid black;
+        box-shadow: 0 0 10px #aaa;
+        border-radius: 20px;
+        padding: 20px;
+      "
+    >
+      <h3 style="text-align: center; grid-column-start: 1; grid-column-end: 3">
+        Would you like to purchase this property?
+      </h3>
+      <button id="purchase" style="border: none; border-radius: 20px; background: lightgreen">
+        Yes</button
+      ><button id="auction" style="border: none; border-radius: 20px; background: lightgray">
+        Auction
+      </button>
+    </div>
+    <div
+      id="actionModal"
+      style="
+        width: 300px;
+        height: 50px;
+        display: none;
+        top: 80vh;
+        left: calc(50% - 171px);
+        position: absolute;
+        z-index: 100;
+        background: white;
+        border: 1px solid black;
+        box-shadow: rgb(170, 170, 170) 0px 0px 10px;
+        border-radius: 20px;
+        padding: 20px;
+      "
+    >
+      <button
+        id="action"
+        style="
+          border: none;
+          margin-top: auto;
+          margin-bottom: auto;
+          border-radius: 20px;
+          background: lightcoral;
+          padding: 10px 20px;
+          justify-self: center;
+        "
+      ></button>
+    </div>
     <canvas class="webgl"></canvas>
     <script type="module" src="./monopoly"></script>
   </body>
