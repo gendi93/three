@@ -88,7 +88,7 @@ export const cardMapGenerator: () => CardMaps = () => {
     const map2 = textureLoader.load(`/textures/monopoly/cards/deed/${name}.png`);
 
     map1.center = new THREE.Vector2(0.5, 0.5);
-    map1.rotation = -Math.PI / 2;
+    map1.rotation = Math.PI / 2;
     map2.center = new THREE.Vector2(0.5, 0.5);
     map2.rotation = -Math.PI / 2;
     map1.generateMipmaps = false;
