@@ -136,6 +136,12 @@ export class Monopoly {
     this.map = this.tileGenerator(TILE_MAP);
     this.properties = this.map.filter((tile) => tile.type === TileType.Property) as PropertyTile[];
     this.turn = 0;
+
+    const player = this.getCurrentPlayer();
+    playerId.textContent = `Player: ${player.name}`;
+    if (player.name === 'Red') playerId.style.color = 'red';
+    else playerId.style.color = 'blue';
+    money.textContent = `funds: £${player.money}`;
   };
 
   // public static getActivePlayers = (): Player[] => {

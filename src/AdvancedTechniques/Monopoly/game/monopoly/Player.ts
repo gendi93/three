@@ -71,13 +71,19 @@ export class Player {
   };
 
   pay = (amount: number, recipient = BANK): void => {
+    if (this.money < amount) console.log('insufficient funds, cannot pay');
     this.money -= amount;
     recipient.money += amount;
+    const money: Element = document.querySelector('#money') || document.createElement('h3');
+    money.textContent = `funds: £${this.money}`;
   };
 
   receive = (amount: number, sender = BANK): void => {
     this.money += amount;
+    if (sender.money < amount) console.log('sender has insufficient funds');
     sender.money -= amount;
+    const money: Element = document.querySelector('#money') || document.createElement('h3');
+    money.textContent = `funds: £${this.money}`;
   };
 
   isJailed = (): boolean => {
@@ -150,7 +156,19 @@ export class Player {
 
   resolvePurchase = (tile: PropertyTile): void => {
     tile.purchase(this);
-    console.log(`${this.name} purchased ${tile.name}!`);
+
+    const properties: Element =
+      document.querySelector('#propertyList') || document.createElement('div');
+    const span = document.createElement('span');
+    span.style.background = tile.color;
+    span.style.color = tile.color !== 'white' && tile.color !== 'yellow' ? 'white' : 'black';
+    span.style.padding = '5px 10px';
+    span.style.border = '1px solid black';
+    span.style.borderRadius = '20px';
+    span.style.marginRight = '5px';
+    span.style.marginTop = '5px';
+    span.textContent = tile.name;
+    properties.appendChild(span);
 
     const tilesInSet = this.game.map
       .filter((tile) => tile.type === TileType.Property)

@@ -79,6 +79,24 @@ let thrownDice = false;
 const debugOptions = {
   throwDice: () => {
     const player = game.getCurrentPlayer();
+    playerId.textContent = `Player: ${player.name}`;
+    if (player.name === 'Red') playerId.style.color = 'red';
+    else playerId.style.color = 'blue';
+    money.textContent = `funds: £${player.money}`;
+    properties.innerHTML = '';
+    player.properties.map((property) => {
+      const span = document.createElement('span');
+      span.style.background = property.color;
+      span.style.color =
+        property.color !== 'white' && property.color !== 'yellow' ? 'white' : 'black';
+      span.style.border = '1px solid black';
+      span.style.borderRadius = '20px';
+      span.style.padding = '5px 10px';
+      span.style.marginRight = '5px';
+      span.style.marginTop = '5px';
+      span.textContent = property.name;
+      properties.appendChild(span);
+    });
 
     if (thrownDice || player.isMoving) return;
     thrownDice = true;
