@@ -268,7 +268,6 @@ export const tiles = [
   }
 ];
 
-export const chanceCard = 'chance';
 export const chanceNames = [
   'advanceGo',
   'advanceTrafalgar',
@@ -279,7 +278,7 @@ export const chanceNames = [
   'advanceUtility',
   'bank',
   'outOfJail',
-  'back4',
+  'back3',
   'jail',
   'repairs',
   'fine',
@@ -288,7 +287,6 @@ export const chanceNames = [
   'collect'
 ];
 
-export const communityCard = 'community';
 export const communityNames = [
   'advanceGo',
   'collect',
