@@ -4,6 +4,7 @@ import { PropertyType, TileType } from './tiles.types';
 type PropertyProps = {
   type: PropertyType;
   name: string;
+  key: string;
   description: string;
   color: string;
   cost: number;
@@ -15,6 +16,7 @@ export class PropertyTile {
   type: TileType;
   propertyType: PropertyType;
   name: string;
+  key: string;
   description: string;
   color: string;
   cost: number;
@@ -27,6 +29,7 @@ export class PropertyTile {
   constructor({
     type,
     name,
+    key,
     description,
     color,
     cost,
@@ -35,6 +38,7 @@ export class PropertyTile {
   }: PropertyProps) {
     this.propertyType = type;
     this.name = name;
+    this.key = key;
     this.description = description;
     this.color = color;
     this.cost = cost;

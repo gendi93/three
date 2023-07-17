@@ -73,6 +73,7 @@ export type BasicTileData = DefaultTileData & {
 
 export type PropertyTileData = DefaultTileData & {
   type: PropertyType;
+  key: string;
   cost: number;
   color: string;
   rentalValues: number[];
@@ -107,6 +108,7 @@ export const TILE_MAP: TileData[] = [
     data: {
       type: PropertyType.Building,
       name: 'Old Kent Road',
+      key: 'oldKentRoad',
       description: '',
       color: 'saddlebrown',
       cost: 60,
@@ -128,6 +130,7 @@ export const TILE_MAP: TileData[] = [
     data: {
       type: PropertyType.Building,
       name: 'Whitechapel Road',
+      key: 'whitechapelRoad',
       description: '',
       color: 'saddlebrown',
       cost: 60,
@@ -149,6 +152,7 @@ export const TILE_MAP: TileData[] = [
     data: {
       type: PropertyType.Station,
       name: 'Kings Cross Station',
+      key: 'kingsCrossStation',
       description: '',
       cost: 200,
       color: 'black',
@@ -160,6 +164,7 @@ export const TILE_MAP: TileData[] = [
     data: {
       type: PropertyType.Building,
       name: 'The Angel, Islington',
+      key: 'islington',
       description: '',
       color: 'cyan',
       cost: 100,
@@ -181,6 +186,7 @@ export const TILE_MAP: TileData[] = [
     data: {
       type: PropertyType.Building,
       name: 'Euston Road',
+      key: 'eustonRoad',
       description: '',
       color: 'cyan',
       cost: 100,
@@ -193,6 +199,7 @@ export const TILE_MAP: TileData[] = [
     data: {
       type: PropertyType.Building,
       name: 'Pentonville Road',
+      key: 'pentonvilleRoad',
       description: '',
       color: 'cyan',
       cost: 120,
@@ -213,6 +220,7 @@ export const TILE_MAP: TileData[] = [
     data: {
       type: PropertyType.Building,
       name: 'Pall Mall',
+      key: 'pallMall',
       description: '',
       color: 'magenta',
       cost: 140,
@@ -225,6 +233,7 @@ export const TILE_MAP: TileData[] = [
     data: {
       type: PropertyType.Utility,
       name: 'Electric Company',
+      key: 'electricCompany',
       description: '',
       cost: 150,
       color: 'white',
@@ -236,6 +245,7 @@ export const TILE_MAP: TileData[] = [
     data: {
       type: PropertyType.Building,
       name: 'Whitehall',
+      key: 'whitehall',
       description: '',
       color: 'magenta',
       cost: 140,
@@ -248,6 +258,7 @@ export const TILE_MAP: TileData[] = [
     data: {
       type: PropertyType.Building,
       name: 'Northumberland Avenue',
+      key: 'northumberlandAvenue',
       description: '',
       color: 'magenta',
       cost: 160,
@@ -260,6 +271,7 @@ export const TILE_MAP: TileData[] = [
     data: {
       type: PropertyType.Station,
       name: 'Marylebone Station',
+      key: 'maryleboneStation',
       description: '',
       cost: 200,
       color: 'black',
@@ -271,6 +283,7 @@ export const TILE_MAP: TileData[] = [
     data: {
       type: PropertyType.Building,
       name: 'Bow Street',
+      key: 'bowStreet',
       description: '',
       color: 'orange',
       cost: 180,
@@ -284,7 +297,7 @@ export const TILE_MAP: TileData[] = [
       type: ActionType.Community,
       name: 'Community Chest',
       description: COMMUNITY_DESCRIPTION,
-      action: communityAction
+      action: chanceAction
     }
   },
   {
@@ -292,6 +305,7 @@ export const TILE_MAP: TileData[] = [
     data: {
       type: PropertyType.Building,
       name: 'Marlborough Street',
+      key: 'marlboroughStreet',
       description: '',
       color: 'orange',
       cost: 180,
@@ -304,6 +318,7 @@ export const TILE_MAP: TileData[] = [
     data: {
       type: PropertyType.Building,
       name: 'Vine Street',
+      key: 'vineStreet',
       description: '',
       color: 'orange',
       cost: 200,
@@ -324,6 +339,7 @@ export const TILE_MAP: TileData[] = [
     data: {
       type: PropertyType.Building,
       name: 'Strand',
+      key: 'strand',
       description: '',
       color: 'red',
       cost: 220,
@@ -345,6 +361,7 @@ export const TILE_MAP: TileData[] = [
     data: {
       type: PropertyType.Building,
       name: 'Fleet Street',
+      key: 'fleetStreet',
       description: '',
       color: 'red',
       cost: 220,
@@ -357,6 +374,7 @@ export const TILE_MAP: TileData[] = [
     data: {
       type: PropertyType.Building,
       name: 'Trafalgar Square',
+      key: 'trafalgarSquare',
       description: '',
       color: 'red',
       cost: 240,
@@ -369,6 +387,7 @@ export const TILE_MAP: TileData[] = [
     data: {
       type: PropertyType.Station,
       name: 'Fenchurch St. Station',
+      key: 'fenchurchStreetStation',
       description: '',
       cost: 200,
       color: 'black',
@@ -380,6 +399,7 @@ export const TILE_MAP: TileData[] = [
     data: {
       type: PropertyType.Building,
       name: 'Leicester Square',
+      key: 'leicesterSquare',
       description: '',
       color: 'yellow',
       cost: 260,
@@ -392,6 +412,7 @@ export const TILE_MAP: TileData[] = [
     data: {
       type: PropertyType.Building,
       name: 'Coventry Street',
+      key: 'coventryStreet',
       description: '',
       color: 'yellow',
       cost: 260,
@@ -404,6 +425,7 @@ export const TILE_MAP: TileData[] = [
     data: {
       type: PropertyType.Utility,
       name: 'Water Works',
+      key: 'waterWorks',
       description: '',
       cost: 150,
       color: 'white',
@@ -415,6 +437,7 @@ export const TILE_MAP: TileData[] = [
     data: {
       type: PropertyType.Building,
       name: 'Piccadilly',
+      key: 'piccadilly',
       description: '',
       color: 'yellow',
       cost: 280,
@@ -435,7 +458,8 @@ export const TILE_MAP: TileData[] = [
     type: TileType.Property,
     data: {
       type: PropertyType.Building,
-      name: 'Oxford Street',
+      name: 'Regent Street',
+      key: 'regentStreet',
       description: '',
       color: 'green',
       cost: 300,
@@ -447,7 +471,8 @@ export const TILE_MAP: TileData[] = [
     type: TileType.Property,
     data: {
       type: PropertyType.Building,
-      name: 'Regent Street',
+      name: 'Oxford Street',
+      key: 'oxfordStreet',
       description: '',
       color: 'green',
       cost: 300,
@@ -469,6 +494,7 @@ export const TILE_MAP: TileData[] = [
     data: {
       type: PropertyType.Building,
       name: 'Bond Street',
+      key: 'bondStreet',
       description: '',
       color: 'green',
       cost: 320,
@@ -481,6 +507,7 @@ export const TILE_MAP: TileData[] = [
     data: {
       type: PropertyType.Station,
       name: 'Liverpool St. Station',
+      key: 'liverpoolStreetStation',
       description: '',
       cost: 200,
       color: 'black',
@@ -501,6 +528,7 @@ export const TILE_MAP: TileData[] = [
     data: {
       type: PropertyType.Building,
       name: 'Park Lane',
+      key: 'parkLane',
       description: '',
       color: 'navy',
       cost: 350,
@@ -522,6 +550,7 @@ export const TILE_MAP: TileData[] = [
     data: {
       type: PropertyType.Building,
       name: 'Mayfair',
+      key: 'mayfair',
       description: '',
       color: 'navy',
       cost: 400,
