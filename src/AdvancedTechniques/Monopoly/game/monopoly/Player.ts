@@ -10,7 +10,7 @@ import { DiceRoll, ResolutionOptions, IntermediatePosition } from './types';
 
 import { tiles } from '../../config';
 
-const SECONDS_PER_TILE = 0.2;
+const SECONDS_PER_TILE = 0.1;
 
 const modal = document.querySelector('#purchaseModal') as HTMLDivElement;
 
@@ -118,7 +118,7 @@ export class Player {
         ) {
           console.log(`${this.name} arrived at ${tile.name}, ${tile.description}`);
         }
-        if (!this.doublesCounter && !this.isJailed) this.game.incrementTurn();
+        if (!this.doublesCounter && !this.isJailed()) this.game.incrementTurn();
         break;
       case TileType.Action: {
         const { actionType, action } = tile as ActionTile;
