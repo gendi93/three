@@ -376,6 +376,8 @@ deedCardData.forEach((data: CardData, index: number) => {
 });
 
 scene.add(communityGroup, chanceGroup, deedGroup);
+chanceCards.reverse();
+communityCards.reverse();
 
 const pieceGeometry = new THREE.CylinderGeometry(0.1, 0.1, 0.3, 16);
 const redMaterial = new THREE.MeshBasicMaterial({ color: 'red' });
