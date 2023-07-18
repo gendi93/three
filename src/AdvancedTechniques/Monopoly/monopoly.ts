@@ -387,7 +387,7 @@ const players = [
   { name: 'Red', piece: redPiece },
   { name: 'Blue', piece: bluePiece }
 ];
-game.initializeGame(players);
+game.initializeGame(players, scene, { chance: chanceCards, community: communityCards });
 
 redPiece.position.set(boardSize / 2 - 0.5, 0.2, boardSize / 2 - 0.5);
 bluePiece.position.set(boardSize / 2 - 0.8, 0.2, boardSize / 2 - 0.5);

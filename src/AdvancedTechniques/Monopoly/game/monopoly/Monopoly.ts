@@ -17,9 +17,10 @@ export class Monopoly {
   properties: PropertyTile[];
   map: Tile[];
   turn: number;
-  communityCards: ActionTile[];
-  chanceCards: ActionTile[];
+  communityCards: Card[];
+  chanceCards: Card[];
   communityPile: number;
+  scene: THREE.Scene;
 
   constructor() {
     // Monopoly.players = [];
@@ -131,11 +132,21 @@ export class Monopoly {
   //   this.turn = 0;
   // }
 
-  public initializeGame = (playerData: PlayerProps[]): void => {
+  public initializeGame = (
+    playerData: PlayerProps[],
+    scene: THREE.Scene,
+    cards: {
+      community: Card[];
+      chance: Card[];
+    }
+  ): void => {
     this.players = this.setPlayerOrder(playerData);
     this.map = this.tileGenerator(TILE_MAP);
     this.properties = this.map.filter((tile) => tile.type === TileType.Property) as PropertyTile[];
     this.turn = 0;
+    this.scene = scene;
+    this.communityCards = cards.community;
+    this.chanceCards = cards.chance;
 
     const player = this.getCurrentPlayer();
     playerId.textContent = `Player: ${player.name}`;
