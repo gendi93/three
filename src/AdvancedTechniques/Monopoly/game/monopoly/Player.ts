@@ -12,6 +12,8 @@ import { tiles } from '../../config';
 
 const SECONDS_PER_TILE = 0.2;
 
+const modal = document.querySelector('#purchaseModal') as HTMLDivElement;
+
 export type PlayerProps = {
   name: string;
   piece: Mesh;
@@ -67,7 +69,7 @@ export class Player {
   arrest = (): void => {
     this.jailTerm = 3;
     this.resetDoublesCounter();
-    this.moveTo(JAIL_POSITION);
+    this.moveTo(JAIL_POSITION, { endTurn: true });
   };
 
   pay = (amount: number, recipient = BANK): void => {
@@ -116,20 +118,20 @@ export class Player {
         ) {
           console.log(`${this.name} arrived at ${tile.name}, ${tile.description}`);
         }
-        if (!this.doublesCounter) this.game.incrementTurn();
+        if (!this.doublesCounter && !this.isJailed) this.game.incrementTurn();
         break;
       case TileType.Action: {
         const { actionType, action } = tile as ActionTile;
-        if (
-          actionType === ActionType.Go ||
-          actionType === ActionType.Arrest ||
-          actionType === ActionType.Tax
-        ) {
+        if (actionType === ActionType.Arrest || actionType === ActionType.Tax) {
           action(this);
         } else if (actionType === ActionType.Chance) {
-          action(this);
+          const onclick = () => action(this);
+          const chanceCard = this.game.chanceCards[0];
+          this.game.displayCard(chanceCard.key, onclick);
         } else if (actionType === ActionType.Community) {
-          action(this);
+          const onclick = () => action(this);
+          const communityCard = this.game.communityCards[0];
+          this.game.displayCard(communityCard.key, onclick);
         }
         break;
       }
@@ -147,11 +149,16 @@ export class Player {
     console.log(`${this.name} arrived at ${name} owned by ${owner?.name || 'nobody'}`);
 
     if (!owner) {
-      this.resolvePurchase(tile);
+      const onclick = () => {
+        this.resolvePurchase(tile);
+      };
+      this.game.displayCard(tile.key, onclick);
     } else if (owner.name !== this.name) {
       this.resolvePayment(tile, modifier);
+      if (!this.doublesCounter) this.game.incrementTurn();
+    } else {
+      if (!this.doublesCounter) this.game.incrementTurn();
     }
-    if (!this.doublesCounter) this.game.incrementTurn();
   };
 
   resolvePurchase = (tile: PropertyTile): void => {
@@ -182,6 +189,16 @@ export class Player {
       console.log(`${this.name} has completed a set of properties!`);
       this.completedSets.push(tile.color);
     }
+
+    console.log(`${this.name} purchased ${tile.name}!`);
+
+    modal.style.display = 'none';
+
+    const deedCard = this.game.scene.getObjectByName(tile.key) as THREE.Mesh;
+    this.moveCardToPlayerSection(deedCard);
+
+    if (!this.doublesCounter) this.game.incrementTurn();
+  };
 
   moveCardToPlayerSection = (deedCard: THREE.Mesh) => {
     const position = { x: 0, y: 0, z: 0 };
@@ -317,6 +334,7 @@ export class Player {
         if (this.doublesCounter === 3) {
           console.log(`${this.name}'s speeding sends them to jail!`);
           this.arrest();
+          return;
         }
       } else {
         this.resetDoublesCounter();
@@ -352,23 +370,15 @@ export class Player {
       const { intermediatePosition, intermediateCoordinates } = positions[
         index
       ] as IntermediatePosition;
-      const temporaryPosition = position < this.position ? position + BOARD_LENGTH : position;
+      const temporaryPosition =
+        direction === 'forward' && position < this.position ? position + BOARD_LENGTH : position;
       const intermediateDuration =
         positions.length === 1
-          ? SECONDS_PER_TILE * (temporaryPosition - this.position)
+          ? SECONDS_PER_TILE * Math.abs(temporaryPosition - this.position)
           : SECONDS_PER_TILE *
             Math.abs(
               (intermediatePosition === 0 ? BOARD_LENGTH : intermediatePosition) - this.position
             );
-      console.log(
-        'tween from',
-        this.position,
-        'to',
-        intermediatePosition,
-        'in',
-        intermediateDuration,
-        'seconds'
-      );
       gsap
         .to(this.piece.position, {
           x: intermediateCoordinates.x,
@@ -380,10 +390,8 @@ export class Player {
         .then(() => {
           this.position = intermediatePosition;
           if (index < positions.length - 1) {
-            console.log('moving from intermediate position to next position');
             tween(positions, index + 1);
           } else {
-            console.log('completed movement');
             this.isMoving = false;
             this.resolveTile(this.game.map[position], { modifier });
             if (endTurn && !this.doublesCounter) this.game.incrementTurn();
@@ -391,7 +399,6 @@ export class Player {
         });
     };
 
-    console.log('pushing final position');
     positions.push({
       intermediatePosition: position,
       intermediateCoordinates: newCoordinates
@@ -400,16 +407,10 @@ export class Player {
     if (position < this.position || Math.floor(position / 10) !== Math.floor(this.position / 10)) {
       if (direction === 'forward') {
         let temporaryPosition = position < this.position ? position + BOARD_LENGTH : position;
-        console.log(
-          temporaryPosition,
-          Math.floor(temporaryPosition / 10),
-          Math.floor(this.position / 10)
-        );
         while (Math.floor(temporaryPosition / 10) !== Math.floor(this.position / 10)) {
           const intermediatePosition = (Math.floor(temporaryPosition / 10) * 10) % BOARD_LENGTH;
           const intermediateCoordinates = new Vector3(...tiles[intermediatePosition].position);
           if (intermediatePosition !== position) {
-            console.log('pushing intermediate position', intermediatePosition);
             positions.push({
               intermediatePosition,
               intermediateCoordinates
@@ -421,7 +422,6 @@ export class Player {
     }
     positions.reverse();
 
-    console.log(positions);
     tween(positions);
   };
 }
