@@ -1,7 +1,7 @@
-import { shuffle } from '../../../helpers';
+import { gsap } from 'gsap';
 import { Player } from '../Player';
 import { TileType, ActionType, PropertyType, BasicType } from '../tiles/tiles.types';
-import { CHANCE_CARDS, COMMUNITY_CARDS, Card } from './Cards';
+import { Card } from './Cards';
 
 export const BOARD_LENGTH = 40;
 
@@ -23,22 +23,68 @@ const ARREST_DESCRIPTION = 'Go to jail!';
 const JAIL_DESCRIPTION = 'Just visiting!';
 const PARKING_DESCRIPTION = 'Smell the flowers!';
 
-const communityCards = shuffle(COMMUNITY_CARDS);
-const chanceCards = shuffle(CHANCE_CARDS);
+const actionModal = document.querySelector('#actionModal') as HTMLDivElement;
 
 const chanceAction = (player: Player) => {
-  const card = chanceCards.shift() as Card;
-  chanceCards.push(card);
+  const card = player.game.chanceCards.shift() as Card;
+  player.game.chanceCards.push(card);
 
   console.log(`${player.name} picked up a chance card: ${card.description}`);
   card.action(player);
+
+  const chanceGroup = player.game.scene.getObjectByName('chanceGroup') as THREE.Group;
+  const cardMesh = player.game.scene.getObjectByName(card.key) as THREE.Group;
+
+  gsap.to(cardMesh.position, {
+    x: -1.5,
+    y: 0.02,
+    z: -1.5,
+    duration: 0.5
+  });
+  gsap.to(cardMesh.rotation, {
+    x: -Math.PI / 2,
+    y: 0,
+    z: Math.PI / 4,
+    duration: 0.5
+  });
+  gsap.to(chanceGroup.position, {
+    x: 0,
+    y: 0.002,
+    z: 0,
+    duration: 0.5
+  });
+  actionModal.style.display = 'none';
 };
 
 const communityAction = (player: Player) => {
-  const card = communityCards.shift() as Card;
-  communityCards.push(card);
+  const card = player.game.communityCards.shift() as Card;
+  player.game.communityCards.push(card);
+
   console.log(`${player.name} picked up a community card: ${card.description}`);
   card.action(player);
+
+  const communityGroup = player.game.scene.getObjectByName('communityGroup') as THREE.Group;
+  const cardMesh = player.game.scene.getObjectByName(card.key) as THREE.Group;
+
+  gsap.to(cardMesh.position, {
+    x: 1.5,
+    y: 0.02,
+    z: 1.5,
+    duration: 0.5
+  });
+  gsap.to(cardMesh.rotation, {
+    x: -Math.PI / 2,
+    y: 0,
+    z: -(3 * Math.PI) / 4,
+    duration: 0.5
+  });
+  gsap.to(communityGroup.position, {
+    x: 0,
+    y: 0.002,
+    z: 0,
+    duration: 0.5
+  });
+  actionModal.style.display = 'none';
 };
 
 const goAction = (player: Player) => {
