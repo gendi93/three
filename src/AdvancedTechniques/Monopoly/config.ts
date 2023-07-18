@@ -1,7 +1,5 @@
 const boardSize = 10;
 const innerBoardScale = 0.728;
-// const cardHeightScale = 0.168144;
-// const cardWidthScale = 0.1;
 const innerBoardSize = boardSize * innerBoardScale;
 const numRowTiles = 9;
 

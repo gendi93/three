@@ -170,7 +170,6 @@ export const CHANCE_CARDS: Card[] = [
         .map((property) => property.houses);
       const numHouses = (ownedHouses.length && ownedHouses.reduce((prev, cur) => prev + cur)) || 0;
       const repairCost = numHouses * 25 + numHotels * 100;
-      // TODO: fuck player up if they cant pay
       console.log(`${player.name} pays £${repairCost} in repairs`);
       player.pay(repairCost);
       if (!player.doublesCounter) player.game.incrementTurn();
@@ -375,7 +374,6 @@ export const COMMUNITY_CARDS: Card[] = [
         .map((property) => property.houses);
       const numHouses = (ownedHouses.length && ownedHouses.reduce((prev, cur) => prev + cur)) || 0;
       const repairCost = numHouses * 40 + numHotels * 115;
-      // TODO: fuck player up if they cant pay
       player.pay(repairCost);
       console.log(`${player.name} pays £${repairCost} in repairs`);
       if (!player.doublesCounter) player.game.incrementTurn();
