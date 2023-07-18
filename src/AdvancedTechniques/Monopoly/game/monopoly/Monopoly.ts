@@ -1,12 +1,23 @@
+import * as THREE from 'three';
+import { gsap } from 'gsap';
+
 import { Player, PlayerProps } from './Player';
 import { TILE_MAP, PropertyTileData, TileData, BasicTileData, ActionTileData } from './assets/Map';
 import { Bank } from './Bank';
 import { Tile, BasicTile, PropertyTile, ActionTile } from './tiles';
-import { TileType } from './tiles/tiles.types';
+import { ActionType, TileType } from './tiles/tiles.types';
 import { rollDice } from './helpers';
 import { PlayerPositions } from '../../config';
+import { Card } from './assets/Cards';
 
 export const BANK = new Bank();
+
+const playerId: HTMLElement = document.querySelector('#playerId') || document.createElement('h1');
+const money: Element = document.querySelector('#money') || document.createElement('h3');
+const purchaseModal = document.querySelector('#purchaseModal') as HTMLDivElement;
+const purchaseButton = document.querySelector('#purchase') as HTMLButtonElement;
+const actionModal = document.querySelector('#actionModal') as HTMLDivElement;
+const actionButton = document.querySelector('#action') as HTMLButtonElement;
 
 export class Monopoly {
   // static players: Player[];
@@ -35,6 +46,68 @@ export class Monopoly {
     this.chanceCards = [];
     this.communityPile = 0;
   }
+
+  displayCard = (key: string, onClick: () => void): void => {
+    const player = this.getCurrentPlayer();
+    const tile = this.map[player.position];
+
+    if (tile.type === TileType.Property) {
+      purchaseModal.style.display = 'grid';
+      purchaseButton.onclick = onClick;
+    }
+    if (tile.type === TileType.Action) {
+      const actionType = (tile as ActionTile).actionType;
+      actionModal.style.display = 'grid';
+      actionButton.innerText =
+        actionType === ActionType.Chance
+          ? this.chanceCards[0].buttonText
+          : this.communityCards[0].buttonText;
+      actionButton.onclick = onClick;
+    }
+
+    const deedCard = this.scene.getObjectByName(key) as THREE.Mesh;
+    const camera = this.scene.getObjectByName('camera') as THREE.Mesh;
+
+    const oldDeedCardRotation = deedCard.rotation.clone();
+
+    const quaternion = new THREE.Quaternion();
+    const oldCameraPosition = camera.position.clone();
+    const newCameraPosition = oldCameraPosition.clone().add(new THREE.Vector3(1, 1, 1));
+    let cardToCameraVector = newCameraPosition.clone().sub(oldCameraPosition);
+
+    if (tile.type === TileType.Property) {
+      quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), cardToCameraVector.normalize());
+    } else {
+      if ((tile as ActionTile).actionType === ActionType.Community) {
+        deedCard.rotation.z = Math.PI;
+      }
+      quaternion.setFromUnitVectors(new THREE.Vector3(0, -1, 0), cardToCameraVector.normalize());
+      cardToCameraVector = oldCameraPosition.clone().sub(newCameraPosition);
+    }
+
+    deedCard.applyQuaternion(quaternion);
+    const newDeedCardRotation = deedCard.rotation.clone();
+    deedCard.rotation.copy(oldDeedCardRotation);
+
+    gsap.to(camera.position, {
+      x: camera.position.x + 1,
+      y: camera.position.y + 1,
+      z: camera.position.z + 1,
+      duration: 0.5
+    });
+    gsap.to(deedCard.position, {
+      x: player.piece.position.x + 1,
+      y: player.piece.position.y + 1,
+      z: player.piece.position.z + 1,
+      duration: 0.5
+    });
+    gsap.to(deedCard.rotation, {
+      x: newDeedCardRotation.x,
+      y: newDeedCardRotation.y,
+      z: newDeedCardRotation.z,
+      duration: 0.5
+    });
+  };
 
   // static getCurrentPlayer = () => {
   //   return Monopoly.players[Monopoly.turn % Monopoly.players.length];
