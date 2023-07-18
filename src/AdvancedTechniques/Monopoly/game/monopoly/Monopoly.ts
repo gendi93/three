@@ -78,9 +78,8 @@ export class Monopoly {
     if (tile.type === TileType.Property) {
       quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), cardToCameraVector.normalize());
     } else {
-      if ((tile as ActionTile).actionType === ActionType.Community) {
-        deedCard.rotation.z = Math.PI;
-      }
+      if ((tile as ActionTile).actionType === ActionType.Community)
+        deedCard.rotation.z = (-3 * Math.PI) / 4;
       quaternion.setFromUnitVectors(new THREE.Vector3(0, -1, 0), cardToCameraVector.normalize());
       cardToCameraVector = oldCameraPosition.clone().sub(newCameraPosition);
     }
