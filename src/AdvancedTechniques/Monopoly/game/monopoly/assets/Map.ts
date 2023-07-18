@@ -90,6 +90,7 @@ const communityAction = (player: Player) => {
 const goAction = (player: Player) => {
   console.log(player.name, 'receives £200 salary');
   player.receive(200);
+  if (!player.doublesCounter) player.game.incrementTurn();
 };
 const incomeTaxAction = (player: Player) => {
   console.log(player.name, 'pays £200 income tax');
