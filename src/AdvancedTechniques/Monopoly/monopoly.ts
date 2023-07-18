@@ -336,39 +336,43 @@ const chanceCards: Card[] = [];
 const communityCards: Card[] = [];
 
 const communityGroup = new THREE.Group();
-communityGroup.name = 'communityGroup';
 const chanceGroup = new THREE.Group();
-chanceGroup.name = 'chanceGroup';
 const deedGroup = new THREE.Group();
+chanceGroup.name = 'chanceGroup';
+communityGroup.name = 'communityGroup';
 deedGroup.name = 'deedGroup';
 
 chanceCardData.forEach((data: CardData, index: number) => {
-  const body = createCard(data);
-  body.scale.set(cardHeightScale, cardWidthScale / 0.002, 0.0002);
-  body.rotation.x = -Math.PI / 2;
-  body.rotation.z = -(3 * Math.PI) / 4;
-  body.position.set(-1.5, 0.002 * index + 0.02, -1.5);
-  chanceGroup.add(body);
-  const card = CHANCE_CARDS.find((card) => card.key === body.name) as Card;
+  const cardMesh = createCard(data);
+  cardMesh.scale.set(cardHeightScale, cardWidthScale / 0.002, 0.0002);
+  cardMesh.rotation.x = -Math.PI / 2;
+  cardMesh.rotation.z = -(3 * Math.PI) / 4;
+  cardMesh.position.set(-1.5, 0.002 * index + 0.02, -1.5);
+  chanceGroup.add(cardMesh);
+
+  const card = CHANCE_CARDS.find((card) => card.key === cardMesh.name) as Card;
   chanceCards.push(card);
 });
+
 communityCardData.forEach((data: CardData, index: number) => {
-  const body = createCard(data);
-  body.scale.set(cardHeightScale, cardWidthScale / 0.002, 0.0002);
-  body.rotation.x = -Math.PI / 2;
-  body.rotation.z = Math.PI / 4;
-  body.position.set(1.5, 0.002 * index + 0.02, 1.5);
-  communityGroup.add(body);
-  const card = COMMUNITY_CARDS.find((card) => card.key === body.name) as Card;
+  const cardMesh = createCard(data);
+  cardMesh.scale.set(cardHeightScale, cardWidthScale / 0.002, 0.0002);
+  cardMesh.rotation.x = -Math.PI / 2;
+  cardMesh.rotation.z = Math.PI / 4;
+  cardMesh.position.set(1.5, 0.002 * index + 0.02, 1.5);
+  communityGroup.add(cardMesh);
+
+  const card = COMMUNITY_CARDS.find((card) => card.key === cardMesh.name) as Card;
   communityCards.push(card);
 });
+
 deedCardData.forEach((data: CardData, index: number) => {
-  const card = createCard(data);
-  card.scale.set(cardHeightScale, cardWidthScale / 0.002, 0.0002);
-  card.rotation.x = -Math.PI / 2;
-  card.rotation.z = (3 * Math.PI) / 4;
-  card.position.set(0, 0.002 * index + 0.02, 0);
-  deedGroup.add(card);
+  const cardMesh = createCard(data);
+  cardMesh.scale.set(cardHeightScale, cardWidthScale / 0.002, 0.0002);
+  cardMesh.rotation.x = -Math.PI / 2;
+  cardMesh.rotation.z = (3 * Math.PI) / 4;
+  cardMesh.position.set(0, 0.002 * index + 0.02, 0);
+  deedGroup.add(cardMesh);
 });
 
 scene.add(communityGroup, chanceGroup, deedGroup);
