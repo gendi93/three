@@ -21,7 +21,7 @@ export type Card = {
 
 export const CHANCE_CARDS: Card[] = [
   {
-    key: 'advanceGo',
+    key: 'advanceGoChance',
     description: 'Advance to GO (Collect £200).',
     action: (player: Player) => {
       player.moveTo(GO_POSITION);
@@ -124,7 +124,7 @@ export const CHANCE_CARDS: Card[] = [
     buttonText: 'Congratulations!'
   },
   {
-    key: 'outOfJail',
+    key: 'outOfJailChance',
     description: 'Get Out of Jail Free.',
     action: (player: Player) => {
       player.gainGetOutOfJailFreeCard();
@@ -145,7 +145,7 @@ export const CHANCE_CARDS: Card[] = [
     buttonText: 'Go back!'
   },
   {
-    key: 'jail',
+    key: 'jailChance',
     description: 'Go to Jail. Go directly to Jail, do not pass Go, do not collect £200.',
     action: (player: Player) => {
       player.arrest();
@@ -154,7 +154,7 @@ export const CHANCE_CARDS: Card[] = [
     buttonText: 'Tsk tsk tsk...'
   },
   {
-    key: 'repairs',
+    key: 'repairsChance',
     description:
       'Make general repairs on all your property. For each house pay £25. For each hotel pay £100.',
     action: (player: Player) => {
@@ -215,7 +215,7 @@ export const CHANCE_CARDS: Card[] = [
     buttonText: 'Congratulations, pay up!'
   },
   {
-    key: 'collect',
+    key: 'collectChance',
     description: 'Your building loan matures. Collect £150',
     action: (player: Player) => {
       player.receive(150);
@@ -228,7 +228,7 @@ export const CHANCE_CARDS: Card[] = [
 
 export const COMMUNITY_CARDS: Card[] = [
   {
-    key: 'advanceGo',
+    key: 'advanceGoCommunity',
     description: 'Advance to GO (Collect £200).',
     action: (player: Player) => {
       player.moveTo(GO_POSITION);
@@ -237,7 +237,7 @@ export const COMMUNITY_CARDS: Card[] = [
     buttonText: 'Advance!'
   },
   {
-    key: 'collect',
+    key: 'collectCommunity',
     description: 'Bank error in your favour. Collect £200.',
     action: (player: Player) => {
       player.receive(200);
@@ -267,7 +267,7 @@ export const COMMUNITY_CARDS: Card[] = [
     buttonText: "Sell it while it's hot!"
   },
   {
-    key: 'outOfJail',
+    key: 'outOfJailCommunity',
     description: 'Get Out of Jail Free.',
     action: (player: Player) => {
       player.gainGetOutOfJailFreeCard();
@@ -276,7 +276,7 @@ export const COMMUNITY_CARDS: Card[] = [
     buttonText: 'Lucky you!'
   },
   {
-    key: 'jail',
+    key: 'jailCommunity',
     description: 'Go to Jail. Go directly to Jail, do not pass Go, do not collect £200.',
     action: (player: Player) => {
       player.arrest();
@@ -360,7 +360,7 @@ export const COMMUNITY_CARDS: Card[] = [
     buttonText: 'Gotta hustle!'
   },
   {
-    key: 'repairs',
+    key: 'repairsCommunity',
     description: 'You are assessed for street repairs. £40 per house. £115 per hotel',
     action: (player: Player) => {
       const ownedBuildings = player.properties.filter(

@@ -269,7 +269,7 @@ export const tiles = [
 ];
 
 export const chanceNames = [
-  'advanceGo',
+  'advanceGoChance',
   'advanceTrafalgar',
   'advanceMayfair',
   'advancePallMall',
@@ -277,23 +277,23 @@ export const chanceNames = [
   'advanceStation2',
   'advanceUtility',
   'bank',
-  'outOfJail',
+  'outOfJailChance',
   'back3',
-  'jail',
-  'repairs',
+  'jailChance',
+  'repairsChance',
   'fine',
   'trip',
   'chairman',
-  'collect'
+  'collectChance'
 ];
 
 export const communityNames = [
-  'advanceGo',
-  'collect',
+  'advanceGoCommunity',
+  'collectCommunity',
   'doctor',
   'stock',
-  'outOfJail',
-  'jail',
+  'outOfJailCommunity',
+  'jailCommunity',
   'holiday',
   'refund',
   'birthday',
@@ -301,7 +301,7 @@ export const communityNames = [
   'hospital',
   'school',
   'receive',
-  'repairs',
+  'repairsCommunity',
   'contest',
   'inheritance'
 ];
