@@ -33,26 +33,35 @@ const chanceAction = (player: Player) => {
   card.action(player);
 
   const chanceGroup = player.game.scene.getObjectByName('chanceGroup') as THREE.Group;
-  const cardMesh = player.game.scene.getObjectByName(card.key) as THREE.Group;
+  const cardMesh = player.game.scene.getObjectByName(card.key) as THREE.Mesh;
 
-  gsap.to(cardMesh.position, {
-    x: -1.5,
-    y: 0.02,
-    z: -1.5,
-    duration: 0.5
-  });
-  gsap.to(cardMesh.rotation, {
-    x: -Math.PI / 2,
-    y: 0,
-    z: Math.PI / 4,
-    duration: 0.5
-  });
-  gsap.to(chanceGroup.position, {
-    x: 0,
-    y: 0.002,
-    z: 0,
-    duration: 0.5
-  });
+  chanceGroup.children
+    .filter((child) => child !== cardMesh)
+    .forEach((child) => {
+      gsap.to(child.position, {
+        x: -1.5,
+        y: child.position.y + 0.002,
+        z: -1.5,
+        duration: 0.5
+      });
+    });
+
+  if (card.key === 'outOfJailChance') {
+    player.moveCardToPlayerSection(cardMesh);
+  } else {
+    gsap.to(cardMesh.position, {
+      x: -1.5,
+      y: 0.02,
+      z: -1.5,
+      duration: 0.5
+    });
+    gsap.to(cardMesh.rotation, {
+      x: -Math.PI / 2,
+      y: 0,
+      z: Math.PI / 4,
+      duration: 0.5
+    });
+  }
   actionModal.style.display = 'none';
 };
 
@@ -64,26 +73,35 @@ const communityAction = (player: Player) => {
   card.action(player);
 
   const communityGroup = player.game.scene.getObjectByName('communityGroup') as THREE.Group;
-  const cardMesh = player.game.scene.getObjectByName(card.key) as THREE.Group;
+  const cardMesh = player.game.scene.getObjectByName(card.key) as THREE.Mesh;
 
-  gsap.to(cardMesh.position, {
-    x: 1.5,
-    y: 0.02,
-    z: 1.5,
-    duration: 0.5
-  });
-  gsap.to(cardMesh.rotation, {
-    x: -Math.PI / 2,
-    y: 0,
-    z: -(3 * Math.PI) / 4,
-    duration: 0.5
-  });
-  gsap.to(communityGroup.position, {
-    x: 0,
-    y: 0.002,
-    z: 0,
-    duration: 0.5
-  });
+  communityGroup.children
+    .filter((child) => child !== cardMesh)
+    .forEach((child) => {
+      gsap.to(child.position, {
+        x: 1.5,
+        y: child.position.y + 0.002,
+        z: 1.5,
+        duration: 0.5
+      });
+    });
+
+  if (card.key === 'outOfJailCommunity') {
+    player.moveCardToPlayerSection(cardMesh);
+  } else {
+    gsap.to(cardMesh.position, {
+      x: 1.5,
+      y: 0.02,
+      z: 1.5,
+      duration: 0.5
+    });
+    gsap.to(cardMesh.rotation, {
+      x: -Math.PI / 2,
+      y: 0,
+      z: -(3 * Math.PI) / 4,
+      duration: 0.5
+    });
+  }
   actionModal.style.display = 'none';
 };
 
