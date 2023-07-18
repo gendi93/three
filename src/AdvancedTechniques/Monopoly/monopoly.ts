@@ -220,17 +220,10 @@ const debugOptions = {
     );
 
     scene.add(die1, die2);
-  },
-  reset: removeDice,
-  resolveTile: () => {
-    const player = game.getCurrentPlayer();
-    player.resolveTile(game.map[player.position]);
   }
 };
 
 gui.add(debugOptions, 'throwDice');
-gui.add(debugOptions, 'reset');
-gui.add(debugOptions, 'resolveTile');
 
 const maps = tileMapGenerator();
 const cards = cardMapGenerator();
