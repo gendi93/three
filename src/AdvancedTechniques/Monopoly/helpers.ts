@@ -1,11 +1,11 @@
 import * as THREE from 'three';
-import { Card } from './game/monopoly/assets/Cards';
 import { tiles, chanceNames, communityNames, deedNames } from './config';
 
 const textureLoader = new THREE.TextureLoader();
 type Map = THREE.Texture;
 type Maps = Map[];
-type CardMaps = { chance: Maps; community: Maps; deed: Maps };
+export type CardData = { name: string; maps: Maps };
+type CardMaps = { chance: CardData[]; community: CardData[]; deed: CardData[] };
 
 export const tileMapGenerator: () => Maps = () => {
   const maps: Maps = [];
@@ -66,7 +66,7 @@ export const cardMapGenerator: () => CardMaps = () => {
     map2.minFilter = THREE.NearestFilter;
     map2.magFilter = THREE.NearestFilter;
 
-    maps.chance.push([map1, map2]);
+    maps.chance.push({ name, maps: [map1, map2] });
   });
 
   communityNames.forEach((name) => {
@@ -80,7 +80,7 @@ export const cardMapGenerator: () => CardMaps = () => {
     map2.minFilter = THREE.NearestFilter;
     map2.magFilter = THREE.NearestFilter;
 
-    maps.community.push([map1, map2]);
+    maps.community.push({ name, maps: [map1, map2] });
   });
 
   deedNames.forEach((name) => {
@@ -98,8 +98,11 @@ export const cardMapGenerator: () => CardMaps = () => {
     map2.minFilter = THREE.NearestFilter;
     map2.magFilter = THREE.NearestFilter;
 
-    maps.deed.push([map1, map2]);
+    maps.deed.push({ name, maps: [map1, map2] });
   });
+
+  maps.chance = shuffle(maps.chance);
+  maps.community = shuffle(maps.community);
 
   return maps;
 };
@@ -120,7 +123,7 @@ export const diceMapsGenerator: () => Map[] = () => {
   return maps;
 };
 
-export const shuffle = (array: Card[]) => {
+export const shuffle = (array: any) => {
   const shuffledArray = [...array];
   for (let i = shuffledArray.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));

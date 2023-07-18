@@ -290,17 +290,20 @@ const createTile = (config, index) => {
   return tile;
 };
 
-const createCard = (type, index) => {
-  const cardMap = cards[type][index];
+const createCard = (cardData: CardData) => {
+  const { name, maps } = cardData;
   const cardMaterials = [
     cardMaterial,
     cardMaterial,
-    new THREE.MeshBasicMaterial({ map: cardMap[1] }),
-    new THREE.MeshBasicMaterial({ map: cardMap[0] }),
     cardMaterial,
-    cardMaterial
+    cardMaterial,
+    new THREE.MeshBasicMaterial({ map: maps[1] }),
+    new THREE.MeshBasicMaterial({ map: maps[0] })
   ];
-  return new THREE.Mesh(boardGeometry, cardMaterials);
+  const card = new THREE.Mesh(boardGeometry, cardMaterials);
+  card.name = name;
+
+  return card;
 };
 
 const border1 = new THREE.Mesh(lineGeometry, lineMaterial);
@@ -326,29 +329,49 @@ tiles.forEach((config, index) => {
 });
 scene.add(boardGroup);
 
-for (let i = 0; i < 16; i++) {
-  const card = createCard('chance', i);
-  card.scale.set(cardHeightScale, 0.1, cardWidthScale);
-  card.rotation.y = Math.PI / 4;
-  card.position.set(1.5, 0.002 * i + 0.02, 1.5);
-  scene.add(card);
-}
+const chanceCardData = cards['chance'];
+const communityCardData = cards['community'];
+const deedCardData = cards['deed'];
+const chanceCards: Card[] = [];
+const communityCards: Card[] = [];
 
-for (let i = 0; i < 16; i++) {
-  const card = createCard('community', i);
-  card.scale.set(cardHeightScale, 0.1, cardWidthScale);
-  card.rotation.y = (-3 * Math.PI) / 4;
-  card.position.set(-1.5, 0.002 * i + 0.02, -1.5);
-  scene.add(card);
-}
+const communityGroup = new THREE.Group();
+communityGroup.name = 'communityGroup';
+const chanceGroup = new THREE.Group();
+chanceGroup.name = 'chanceGroup';
+const deedGroup = new THREE.Group();
+deedGroup.name = 'deedGroup';
 
-for (let i = 0; i < 28; i++) {
-  const card = createCard('deed', i);
-  card.scale.set(cardHeightScale, 0.1, cardWidthScale);
-  card.rotation.y = Math.PI / 2;
-  card.position.set(0, 0.002 * i + 0.02, 0);
-  scene.add(card);
-}
+chanceCardData.forEach((data: CardData, index: number) => {
+  const body = createCard(data);
+  body.scale.set(cardHeightScale, cardWidthScale / 0.002, 0.0002);
+  body.rotation.x = -Math.PI / 2;
+  body.rotation.z = -(3 * Math.PI) / 4;
+  body.position.set(-1.5, 0.002 * index + 0.02, -1.5);
+  chanceGroup.add(body);
+  const card = CHANCE_CARDS.find((card) => card.key === body.name) as Card;
+  chanceCards.push(card);
+});
+communityCardData.forEach((data: CardData, index: number) => {
+  const body = createCard(data);
+  body.scale.set(cardHeightScale, cardWidthScale / 0.002, 0.0002);
+  body.rotation.x = -Math.PI / 2;
+  body.rotation.z = Math.PI / 4;
+  body.position.set(1.5, 0.002 * index + 0.02, 1.5);
+  communityGroup.add(body);
+  const card = COMMUNITY_CARDS.find((card) => card.key === body.name) as Card;
+  communityCards.push(card);
+});
+deedCardData.forEach((data: CardData, index: number) => {
+  const card = createCard(data);
+  card.scale.set(cardHeightScale, cardWidthScale / 0.002, 0.0002);
+  card.rotation.x = -Math.PI / 2;
+  card.rotation.z = (3 * Math.PI) / 4;
+  card.position.set(0, 0.002 * index + 0.02, 0);
+  deedGroup.add(card);
+});
+
+scene.add(communityGroup, chanceGroup, deedGroup);
 
 const pieceGeometry = new THREE.CylinderGeometry(0.1, 0.1, 0.3, 16);
 const redMaterial = new THREE.MeshBasicMaterial({ color: 'red' });
