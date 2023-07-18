@@ -341,7 +341,7 @@ export const TILE_MAP: TileData[] = [
   {
     type: TileType.Action,
     data: {
-      type: ActionType.Community,
+      type: ActionType.Chance,
       name: 'Community Chest',
       description: COMMUNITY_DESCRIPTION,
       action: chanceAction
