@@ -16,8 +16,19 @@ const playerId: HTMLElement = document.querySelector('#playerId') || document.cr
 const money: Element = document.querySelector('#money') || document.createElement('h3');
 const purchaseModal = document.querySelector('#purchaseModal') as HTMLDivElement;
 const purchaseButton = document.querySelector('#purchase') as HTMLButtonElement;
+const auctionButton = document.querySelector('#auction') as HTMLButtonElement;
+
 const actionModal = document.querySelector('#actionModal') as HTMLDivElement;
 const actionButton = document.querySelector('#action') as HTMLButtonElement;
+
+const biddingModal = document.querySelector('#biddingModal') as HTMLDivElement;
+const auctionDescription = document.querySelector('#auctionDescription') as HTMLDivElement;
+const highestBidElement = document.querySelector('#highestBid') as HTMLInputElement;
+const currentBidElement = document.querySelector('#currentBid') as HTMLInputElement;
+const bid1Button = document.querySelector('#bid1') as HTMLButtonElement;
+const bid10Button = document.querySelector('#bid10') as HTMLButtonElement;
+const bid100Button = document.querySelector('#bid100') as HTMLButtonElement;
+const withdrawButton = document.querySelector('#withdraw') as HTMLButtonElement;
 
 export class Monopoly {
   players: Player[];
@@ -28,6 +39,8 @@ export class Monopoly {
   chanceCards: Card[];
   communityPile: number;
   scene: THREE.Scene;
+  playerBids: { player: Player; bid: number; isWithdrawn: boolean }[];
+  bidderIndex: number;
 
   constructor() {
     this.players = [];
@@ -37,7 +50,76 @@ export class Monopoly {
     this.communityCards = [];
     this.chanceCards = [];
     this.communityPile = 0;
+    this.bidderIndex = 0;
   }
+
+  awaitBid = () => {
+    const currentBidder = this.playerBids[this.bidderIndex % this.playerBids.length];
+
+    if (currentBidder.isWithdrawn) return;
+
+    const { player, bid } = currentBidder;
+
+    currentBidElement.innerText = `${player.name}'s bid: £${bid}`;
+
+    return new Promise((resolve) => {
+      bid1Button.onclick = () => this.placeBid(1, resolve);
+      bid10Button.onclick = () => this.placeBid(10, resolve);
+      bid100Button.onclick = () => this.placeBid(100, resolve);
+      withdrawButton.onclick = () => this.withdraw(resolve);
+    });
+  };
+
+  placeBid = (amount: number, resolve: any) => {
+    let highestBid = this.playerBids
+      .map((bidder) => bidder.bid)
+      .reduce((prev, cur) => Math.max(prev, cur));
+
+    if (highestBid === 0) highestBid = 10;
+
+    this.playerBids[this.bidderIndex % this.playerBids.length].bid = highestBid + amount;
+    this.bidderIndex++;
+
+    highestBidElement.textContent = `Highest bid: £${highestBid + amount}`;
+
+    resolve();
+  };
+
+  withdraw = (resolve: any) => {
+    this.playerBids[this.bidderIndex % this.playerBids.length].isWithdrawn = true;
+    this.bidderIndex++;
+    resolve();
+  };
+
+  initiateAuction = async () => {
+    biddingModal.style.display = 'grid';
+
+    const currentPlayer = this.getCurrentPlayer();
+    const tile = this.map[currentPlayer.position] as PropertyTile;
+    const { name, cost } = tile;
+
+    auctionDescription.textContent = `Auction for ${name}. Original price: £${cost}`;
+
+    const startingBid = 10;
+
+    highestBidElement.textContent = `Starting bid: £${startingBid}`;
+
+    this.playerBids = this.players.map((player) => ({ player, bid: 0, isWithdrawn: false }));
+
+    while (this.playerBids.filter((bidder) => !bidder.isWithdrawn).length > 1) {
+      await this.awaitBid();
+    }
+
+    biddingModal.style.display = 'none';
+    const winner = this.playerBids.find((bidder) => !bidder.isWithdrawn) as {
+      player: Player;
+      bid: number;
+      isWithdrawn: boolean;
+    };
+
+    winner.player.resolvePurchase(tile, winner.bid);
+    if (!currentPlayer.doublesCounter) this.incrementTurn();
+  };
 
   displayCard = (key: string, onClick: () => void): void => {
     const player = this.getCurrentPlayer();
@@ -46,6 +128,7 @@ export class Monopoly {
     if (tile.type === TileType.Property) {
       purchaseModal.style.display = 'grid';
       purchaseButton.onclick = onClick;
+      auctionButton.onclick = this.initiateAuction;
     }
     if (tile.type === TileType.Action) {
       const actionType = (tile as ActionTile).actionType;
@@ -160,6 +243,7 @@ export class Monopoly {
     this.scene = scene;
     this.communityCards = cards.community;
     this.chanceCards = cards.chance;
+    this.playerBids = this.players.map((player) => ({ player, bid: 0, isWithdrawn: false }));
 
     const player = this.getCurrentPlayer();
     playerId.textContent = `Player: ${player.name}`;

@@ -88,6 +88,63 @@
         "
       ></button>
     </div>
+    <div
+      id="biddingModal"
+      style="
+        width: 500px;
+        height: auto;
+        display: none;
+        grid-template-rows: 1fr 1fr 1fr;
+        grid-template-columns: 1fr 1fr 1fr;
+        grid-gap: 20px;
+        top: 70vh;
+        left: calc(50% - 271px);
+        position: absolute;
+        z-index: 100;
+        background: white;
+        border: 1px solid black;
+        box-shadow: 0 0 10px #aaa;
+        border-radius: 20px;
+        padding: 20px;
+      "
+    >
+      <h3
+        id="auctionDescription"
+        style="text-align: center; grid-column-start: 1; grid-column-end: 4"
+      >
+        Auction for Pall Mall. Original price £200
+      </h3>
+      <h4 id="highestBid" style="text-align: center; grid-column-start: 2; grid-column-end: 3">
+        Highest bid: £200
+      </h4>
+      <h4 id="currentBid" style="text-align: center; grid-column-start: 2; grid-column-end: 3">
+        Current bid: £150
+      </h4>
+      <button
+        id="bid1"
+        style="border: none; grid-column-start: 1; border-radius: 20px; background: lightgreen"
+      >
+        1
+      </button>
+      <button
+        id="bid10"
+        style="border: none; grid-column-start: 2; border-radius: 20px; background: lightgreen"
+      >
+        10
+      </button>
+      <button
+        id="bid100"
+        style="border: none; grid-column-start: 3; border-radius: 20px; background: lightgreen"
+      >
+        100
+      </button>
+      <button
+        id="withdraw"
+        style="border: none; grid-column-start: 2; border-radius: 20px; background: lightcoral"
+      >
+        withdraw
+      </button>
+    </div>
     <canvas class="webgl"></canvas>
     <script type="module" src="./monopoly"></script>
   </body>

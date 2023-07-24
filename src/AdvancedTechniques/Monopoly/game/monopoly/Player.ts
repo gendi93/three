@@ -13,6 +13,7 @@ import { tiles } from '../../config';
 const SECONDS_PER_TILE = 0.1;
 
 const modal = document.querySelector('#purchaseModal') as HTMLDivElement;
+const playerId: HTMLElement = document.querySelector('#playerId') as HTMLHeadingElement;
 
 export type PlayerProps = {
   name: string;
@@ -76,15 +77,18 @@ export class Player {
     if (this.money < amount) console.log('insufficient funds, cannot pay');
     this.money -= amount;
     recipient.money += amount;
-    const money: Element = document.querySelector('#money') || document.createElement('h3');
-    money.textContent = `funds: £${this.money}`;
+
+    if (playerId.textContent?.split(' ')[1] === this.name) {
+      const money: Element = document.querySelector('#money') as HTMLHeadingElement;
+      money.textContent = `funds: £${this.money}`;
+    }
   };
 
   receive = (amount: number, sender = BANK): void => {
     this.money += amount;
     if (sender.money < amount) console.log('sender has insufficient funds');
     sender.money -= amount;
-    const money: Element = document.querySelector('#money') || document.createElement('h3');
+    const money: Element = document.querySelector('#money') as HTMLHeadingElement;
     money.textContent = `funds: £${this.money}`;
   };
 
@@ -161,21 +165,23 @@ export class Player {
     }
   };
 
-  resolvePurchase = (tile: PropertyTile): void => {
-    tile.purchase(this);
+  resolvePurchase = (tile: PropertyTile, overrideCost?: number): void => {
+    tile.purchase(this, overrideCost);
 
-    const properties: Element =
-      document.querySelector('#propertyList') || document.createElement('div');
-    const span = document.createElement('span');
-    span.style.background = tile.color;
-    span.style.color = tile.color !== 'white' && tile.color !== 'yellow' ? 'white' : 'black';
-    span.style.padding = '5px 10px';
-    span.style.border = '1px solid black';
-    span.style.borderRadius = '20px';
-    span.style.marginRight = '5px';
-    span.style.marginTop = '5px';
-    span.textContent = tile.name;
-    properties.appendChild(span);
+    if (playerId.textContent?.split(' ')[1] === this.name) {
+      const properties: Element =
+        document.querySelector('#propertyList') || document.createElement('div');
+      const span = document.createElement('span');
+      span.style.background = tile.color;
+      span.style.color = tile.color !== 'white' && tile.color !== 'yellow' ? 'white' : 'black';
+      span.style.padding = '5px 10px';
+      span.style.border = '1px solid black';
+      span.style.borderRadius = '20px';
+      span.style.marginRight = '5px';
+      span.style.marginTop = '5px';
+      span.textContent = tile.name;
+      properties.appendChild(span);
+    }
 
     const tilesInSet = this.game.map
       .filter((tile) => tile.type === TileType.Property)
@@ -190,14 +196,18 @@ export class Player {
       this.completedSets.push(tile.color);
     }
 
-    console.log(`${this.name} purchased ${tile.name}!`);
+    if (overrideCost) {
+      console.log(`${this.name} purchased ${tile.name} at an auction for £${overrideCost}!`);
+    } else {
+      console.log(`${this.name} purchased ${tile.name}!`);
+    }
 
     modal.style.display = 'none';
 
     const deedCard = this.game.scene.getObjectByName(tile.key) as THREE.Mesh;
     this.moveCardToPlayerSection(deedCard);
 
-    if (!this.doublesCounter) this.game.incrementTurn();
+    if (!overrideCost && this.doublesCounter) this.game.incrementTurn();
   };
 
   moveCardToPlayerSection = (deedCard: THREE.Mesh) => {
