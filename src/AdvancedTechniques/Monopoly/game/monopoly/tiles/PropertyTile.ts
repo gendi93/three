@@ -51,8 +51,8 @@ export class PropertyTile {
     this.houses = 0;
   }
 
-  purchase = (player: Player, cost?: number) => {
-    player.pay(cost || this.cost);
+  purchase = (player: Player, overrideCost?: number) => {
+    player.pay(overrideCost || this.cost);
     player.properties.push(this);
     this.owner = player;
   };
